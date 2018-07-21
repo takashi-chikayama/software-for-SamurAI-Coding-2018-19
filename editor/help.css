@@ -1,0 +1,19 @@
+em { color: #800; }
+table td { text-align: center; vertical-align: middle; }
+.alignleft { text-align: left; }
+body { counter-reset: figno; }
+h1 { counter-reset: section; text-align: center; }
+h2 { counter-reset: subsection; }
+h2:before { counter-increment: section; content: counter(section) ". "; }
+h3:before {
+    counter-increment: subsection;
+    content: counter(section) "." counter(subsection) " ";
+}
+.centered { text-align: center; }
+figure { counter-increment: fig; }
+figcaption { text-align: center; }
+figcaption:before { content: "図"counter(fig)":";}
+th { text-align: center; }
+table { border-spacing: 30px 5px; }
+img { padding: 1px; border: none;}
+

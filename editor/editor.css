@@ -1,0 +1,78 @@
+html, body {
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+#controlBox {
+    position: static;
+    display: block;
+    border: 3px outset #88C;
+    margin: 0px 3px 3px 3px;
+    padding: 3px;
+    background: #CCF;
+}
+#controlBox div {
+    display: inline-block;
+}
+#magnification {
+    display: inline-block;
+}
+#editButtons img {
+    padding: 2px 2px 0px 0px;
+}
+#editButtons img:hover {
+    background: #FC8;
+}
+#fileButtons {
+}
+#courseSize {
+    display: inline-block;
+    font-size: 20px;
+    font-family: Arial, san-serif;
+    font-weight: bold;
+    vertical-align: top;
+    color: #066;
+    padding: 5px;
+}
+#parameters input {
+    border: none;
+    font-size: 16px;
+    font-family: Arial, san-serif;
+    font-weight: bold;
+    color: #066;
+    background: none;
+}
+#parameters input {
+    text-align: right;
+}
+#course {
+    background-color: #800;
+}
+#courseView {
+    position: fixed;
+    display: block;
+    width: 100%;
+    overflow: auto;
+}
+#visionScreen {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    background-color: #FFF8;
+    border: none;
+    z-index: 2;
+}
+.courseSquare {
+    position: absolute;
+    border: 1px solid gray;
+    data-toggle: tooltip;
+}
+.courseSquare:hover {
+    border: 2px solid;
+    border-color: red;
+    z-index: 1;
+}
+.player {
+    position: absolute;
+    z-index: 2;
+}

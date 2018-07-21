@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>SamurAI Jockey 2018 Course Editor</title>
+    <script src="editor.js"></script>
+    <link rel="stylesheet" type="text/css" href="editor.css">
+  </head>
+  <body onresize="windowResized()">
+    <div id="controlBox">
+      <div id="editButtons">
+	<img width="20px" src="../icons/widen.png" onclick="widerCourse()"
+	     title="widen course">
+	<img width="20px" src="../icons/narrower.png" onclick="narrowerCourse()"
+	     title="narrower course">
+	<span id="courseSize"></span>
+	<img width="20px" src="../icons/longer.png" onclick="longerCourse()"
+	     title="lengthen course">
+	<img width="20px" src="../icons/shorter.png" onclick="shorterCourse()"
+	     title="shorten course">
+      </div>
+      &nbsp;
+      <div id="magnification">
+	<img width="20px" src="../icons/whole_width.png" onclick="standardView()"
+	     title="resize to the course width">
+	<img width="20px" src="../icons/whole.png" onclick="wholeView()"
+	     title="resize show the whole course">
+	<img width="20px" src="../icons/zoom_in.png" onclick="zoom(+1)"
+	     title="zoom in">
+	<img width="20" src="../icons/zoom_out.png" onclick="zoom(-1)"
+	     title="zoom out">
+      </div>
+      &nbsp;
+      <div id="parameters">
+	<img width="26px" src="../icons/eye.png">
+	<input id='visionRange' type='number' style="width: 36px"
+	       title="vision range" min="1" value="10">
+	<img width="18px" src="../icons/steps.png">
+	<input id='stepLimit' type='number' style="width: 44px" 
+	       title="step limit" min="1" value="100">
+	<img width="24px" src="../icons/timer.png">
+	<input id='thinkTime' type='number' style="width: 44px" 
+	       title="think time" min="1" value="120">
+      </div>
+      &nbsp;
+      <div id="fileBottons">
+	<button onclick="newCourse(16,20)">New</button>
+	<button onclick="document.getElementById('fileInput').click();"
+		value="/home/takashi/Downloads/sample.json">Load</button>
+	<input type="file" style="display:none" id="fileInput"
+	       onchange="loadFile(event)">
+	<button onclick="saveFile(event)">Save</button>
+	<button onclick="location.href='help.html'">Help</button>
+      </div>
+      <div style="display:none;margin-top:5px" id="saveFileForm"
+	   style="margin-top:5px">
+	File name:
+	<input type="text" value="course.json" id="saveFileName">
+	<button onclick="doSaveFile(event)">Save</button>
+	<button onclick="document.getElementById('saveFileForm').style.display='none'">
+	  Dismiss</button>
+      </div>
+    </div>
+    <div id="courseView" height="auto">
+      <div id="course">
+      </div>
+    </div>
+    <script>
+      newCourse(16,20);
+    </script>
+  </body>
+</html>

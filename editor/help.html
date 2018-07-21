@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" type="text/css" href="help.css">
+  </head>
+  <body>
+    <h1>SamurAI Jockey 2018 コースエディタの使い方</h1>
+    <div class='centered'>
+      SamurAI Jockey 2018 コースエディタは SamurAI Jockey 2018
+      ゲームのコース編集ツールです。
+    </div>
+
+    <figure style="float:right; width: 40%;">
+      <img src="../screenshots/edit-session.png"
+	   style="width: 100%; object-fit: scale-down">
+      <figcaption>コースの編集画面例</figcaption>
+    </figure>
+
+    <h2>コースの表示</h2>
+    <p>
+      右図に編集中のコースエディタの画面例を示します。
+    </p>
+    <p>
+      コースは指定した幅と長さの格子状の枡からなります。
+      幅と長さの最小値は5，最大値は100です。
+      この例ではコースの幅が16、長さが20です。
+    </p>
+    <p>
+      コースエディタはコースの大きさと障害物の配置を決めます。
+      障害物には通常の障害物と水濠障害があります。
+      障害物の役割についてはルールをご参照ください。
+    </p>
+    <p>
+      赤と青の三角形が両プレイヤの初期位置を示します。
+    </p>
+    <p>
+      コース画面の上半分程度が白っぽくなっています。
+      これは先頭プレイヤがマウスカーソル位置 (この例では青のプレイヤの初期位置)
+      にあるとき、プレイヤの視界 (この例では10枡先まで) の外であることを表しています。
+      この領域はマウスの動きに従って変化します。
+    </p>
+    <figure style="float:right">
+      <img src="../screenshots/balloon.png" width="100px">
+      <figcaption>座標の表示</figcaption>
+    </figure>
+    <p>
+      マウスカーソル位置の枡は外枠が赤くなり、
+      枡の座標 (この例では &ldquo;(7,0)&rdquo;) が近くに表示されます。
+      座標は右手系です。
+    </p>
+    <figure>
+      <table>
+	<tr>
+	  <td><img src="../icons/lawn.png" width="60px"></td>
+	  <td><img src="../icons/obstacle.png" width="60px"></td>
+	  <td><img src="../icons/jump.png" width="60px"></td>
+	  <td><img src="../icons/withPlayer0.png" width="60px"></td>
+	  <td><img src="../icons/withPlayer1.png" width="60px"></td>
+	</tr>
+	<tr>
+	  <td>障害のない枡</td>
+	  <td>通常障害物</td>
+	  <td>水濠障害</td>
+	  <td colspan="2">プレイヤの初期位置</td>
+	</tr>
+	<tr>
+	</tr>
+      </table>
+      <figcaption>枡の種類</figcaption>
+    </figure>
+
+    <h2>枡の編集</h2>
+    <h3>マウスクリック</h3>
+    <p>
+      コース内の枡をマウスクリックして、枡の状態を変更できます。
+      クリックするごとに障害物なし→通常障害→水濠障害→障害物なしと循環します。
+    </p>
+
+    <h3>マウスドラッグ</h3>
+    <p>
+      枡の中でマウスボタンを押し下げると、その枡の状態が変わりますが、
+      そのままドラッグするとドラッグ先の枡も同じ状態になります。
+      マウスボタンを離せば、変更は離したときの枡までになります。
+    </p>
+
+    <h3>初期位置の移動</h3>
+    <p>
+      プレイヤの初期位置の枡でマウスボタンを押し下げてドラッグすると、
+      そのプレイヤの初期位置はドラッグ先になります。
+      ただし、ドラッグできる先は最も下の行の障害物のない枡に限られます。
+    </p>
+
+    <h2>ボタン類と使い方</h2>
+    <p>
+      ページの一番上に以下のようなボタン類が並んでいます。これらの使い方について説明します。
+    </p>
+    <figure style="margin: 0px">
+      <img src="../screenshots/buttons.png" width="100%">
+      <figcaption>画面上部のボタン類</figcaption>
+    </figure>
+
+    <h3>コースサイズ変更ボタン群</h3>
+    コースのサイズを変更するためのボタン群です。
+    <table>
+      <tr><th width="60px">ボタン</th><th>機能</th></tr>
+      <tr>
+	<td><img src="../icons/widen.png" width="20px"></td>
+	<td class='alignleft'>コースの幅を1列拡げます。</td>
+      </tr>
+      <tr>
+	<td><img src="../icons/narrower.png" width="20px"></td>
+	<td class='alignleft'>コースの幅を1列狭めます。</td>
+      </tr>
+      <tr>
+	<td><img src="../icons/longer.png" width="20px"></td>
+	<td class='alignleft'>コース長を1行長くします。</td>
+      </tr>
+      <tr>
+	<td><img src="../icons/shorter.png" width="20px"></td>
+	<td class='alignleft'>コース長を1行縮めます。</td>
+      </tr>
+    </table>
+    <p>
+      これらのボタンの間にある &ldquo;16x20&rdquo; は、
+      現在のコースの幅と長さを示しています。
+      幅も長さも最小と最大の間でしか変えられません。
+    </p>
+
+    <h3>虫眼鏡ボタン群</h3>
+    表示を拡大/縮小するためのボタン群です。
+    <table>
+      <tr><th width="60px">ボタン</th><th>機能</th></tr>
+      <tr>
+	<td><img src="../icons/whole_width.png" width="20px"></td>
+	<td class='alignleft'>
+	  コース幅全体が入るようにズームします。
+	  初期状態やウィンドウサイズを変更した場合にはこの状態になります。
+	</td>
+      </tr>
+      <tr>
+	<td><img src="../icons/whole.png" width="20px"></td>
+	<td class='alignleft'>
+	  長さ方向にもコース全体が入るようにズームします。
+	</td>
+      </tr>
+      <tr>
+	<td><img src="../icons/zoom_in.png" width="20px"></td>
+	<td class='alignleft'>
+	  表示を10&percnt;拡大します。
+	</td>
+      </tr>
+      <tr>
+	<td><img src="../icons/zoom_out.png" width="20px"></td>
+	<td class='alignleft'>
+	  表示を10&percnt;縮小します。
+	</td>
+      </tr>
+    </table>
+    <p>
+      コース全体を表示しきれない場合にはスクロールバーが表示されます。
+    </p>
+
+    <h3>パラメタ入力</h3>
+    <p>
+      以下の各アイコンの右にある数値領域は、
+      コースの種々のパラメタを変更するためのものです。
+    </p>
+    <table>
+      <tr><th width="80px">アイコン</th><th>パラメタ</th></tr>
+      <tr>
+	<td><img src="../icons/eye.png" width="20px"></td>
+	<td class='alignleft'>視界の範囲</td>
+      </tr>
+      <tr>
+	<td><img src="../icons/steps.png" width="20px"></td>
+	<td class='alignleft'>最大ステップ数</td>
+      </tr>
+      <tr>
+	<td><img src="../icons/timer.png" width="20px"></td>
+	<td class='alignleft'>最大合計考慮時間 (秒)</td>
+      </tr>
+    </table>
+    <figure style="float:right">
+      <img src="../screenshots/spinner.png" width="100px">
+      <figcaption>視界範囲の変更</figcaption>
+    </figure>
+    <p>
+      数値をクリックすればキーボード入力で数値を編集できます。
+      多くのブラウザではマウスを数値の上に動かすと、
+      値を上下するスピナーが表示され、
+      これを使って変更することもできます。
+    </p>
+    
+    <h3>Newボタン</h3>
+    <p>
+      新たなコースの編集を始めます。
+      新しいコースには障害物がありません。
+    </p>
+    <p>
+      <em>それまで編集していたコースのデータは失われます。</em>
+    </p>
+
+    <h3>Loadボタン</h3>
+    <p>
+      ファイルに格納してあるコースデータを読み込みます。
+      クリックするとダイアログが出ますので、読み込むファイルを指定してください。
+      ファイルを指定すると読み込んだコースデータの編集を始めます。
+      <em>それまで編集していたコースのデータは失われます。</em>
+      ダイアログをキャンセルすれば、それまでの編集を継続します。
+    </p>
+
+    <h3>Saveボタン</h3>
+    <p>
+      編集しているコースの情報をファイルに保存します。
+      ファイル名を指定する入力ボックスが表示されるので、
+      適宜入力してからSaveをクリックすればコースデータを保存します。
+      保存先のディレクトリはブラウザのダウンロード先になり、指定することはできません。
+      <em>指定したファイル名のファイルが既に存在すれば、
+	ブラウザがファイル名を適宜自動的に変更します。</em>
+      保存後は編集を継続できます。
+    </p>
+    <figure style="margin:0px">
+      <img src="../screenshots/saving.png" width="100%">
+      <figcaption>格納先ファイル名の指定</figcaption>
+    </figure>
+    <p>
+      Dismissをクリックすれば、保存せずに編集を継続します。
+    </p>
+
+    <h3>Helpボタン</h3>
+    <p>
+      このページを表示します。
+    </p>
+
+    <button onclick="window.history.back();">コースエディタに戻る</button>
+  </body>
+</html>
