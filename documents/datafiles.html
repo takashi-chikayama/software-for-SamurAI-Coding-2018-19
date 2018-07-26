@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" type="text/css" href="samurai-docs.css">
+  </head>
+  <body>
+    <h1>SamurAI Jockey 2018 データファイル形式</h1>
+    <div class='centered'>
+      2018年7月26日<br>
+      近山 隆
+    </div>
+    <div class='abstract'>
+      <p>
+	SamurAI Coding 2018-19 のゲームシステムで用いるデータファイルの形式を述べる.
+	ここに述べるファイルはシステム内のデータ交換に用いるものであり,
+	競技参加者がこの形式を知る必要はない.
+      </p>
+      <p>
+	それぞれの項目の意味の詳細については
+	<a href="rule-jp.html">SamurAI Jockey 2018 ゲームルール</a>
+	を参照のこと.
+      </p>
+    </div>
+
+    <h2>データファイルの種類</h2>
+    <p>
+      SamurAI Jockey 2018 ゲームシステムが用いるデータファイルには以下のものがある.
+      いずれも JSON 形式である.
+      <dl>
+	<dt>コース記述:</dt>
+	<dd>
+	  ゲームで用いるコースやレースの条件を記述する形式.
+	  通常 editor で作成し, official がレースに用いる.
+	</dd>
+	<dt>レースログ:</dt>
+	<dd>
+	  1レースの経緯と結果を記録するための形式.
+	  通常 official が書き出したものを viewer で読み込んで表示するのに用いる.
+	</dd>
+      </ul>
+    </p>
+
+    <h2>コース記述</h2>
+    <p>
+      コース記述ファイルは以下の形式である.
+      <blockquote>
+	<p>{</p>
+	<block>
+	  <p>"filetype": "race course",</p>
+	  <p>"width": <var>w</var>,</p>
+	  <p>"length": <var>l</var>,</p>
+	  <p>"vision": <var>vision</var>,</p>
+	  <p>"thinkTime": <var>thinkTime</var>,</p>
+	  <p>"stepLimit": <var>stepLimit</var>,</p>
+	  <p>"x0": <var>x<sub>0</sub></var>,</p>
+	  <p>"x1": <var>x<sub>1</sub></var>,</p>
+	  <p>"squares": [
+	    <var>s<sub>0,0</sub></var>,
+	    <var>&hellip;</var>,
+	    <var>s<sub>w&minus;1,0</sub></var>,
+	    <var>&hellip;</var>,
+	    <var>s<sub>0,l&minus;1</sub></var>,
+	    <var>&hellip;</var>,
+	    <var>s<sub>w&minus;1,l&minus;1</sub></var>
+	    ]
+	  </p>
+	</block>
+	<p>}</p>
+      </blockquote>
+      ここで <var>w</var> はコースの幅, <var>l</var> はコースの長さ,
+      <var>vision</var> は視界距離,
+      <var>thinkTime</var> は考慮時間,
+      <var>stepLimit</var> は制限ステップ数,
+      <var>x<sub>p</sub></var> はプレイヤ <var>p</var> の初期位置の
+      <var>x</var> 座標である.
+    </p>
+    <p>
+      <var>s<sub>x,y</sub></var> は座標 (<var>x, y</var>) の枡目についての情報で,
+      その意味は以下のとおりである.
+      <ul class="nodots">
+	<li> <code>0</code>: 当該の枡目は障害でも水濠でもない.</li>
+	<li> <code>1</code>: 当該の枡目は障害である.</li>
+	<li> <code>2</code>: 当該の枡目は水濠である.</li>
+      </ul>
+    </p>
+
+    <h2>レースログ</h2>
+    <p>
+      レースログファイルは以下の形式である.
+      <blockquote>
+	<p>{</p>
+	<block>
+	  <p>"filetype": "race log",</p>
+	  <p>"course": <var>course</var>,</p>
+	  <p>"name0": <var>name<sub>0</sub></var>,</p>
+	  <p>"name1": <var>name<sub>1</sub></var>,</p>
+	  <p>"time0": <var>time<sub>0</sub></var>,</p>
+	  <p>"time1": <var>time<sub>1</sub></var>,</p>
+	  <p>"log": [
+	    <var>log<sub>0</sub></var>,
+	    <var>log<sub>1</sub></var>,
+	    <var>log<sub>2</sub></var>,
+	    <var>&hellip;</var>]</p>
+	</block>
+	<p>}</p>
+      </blockquote>
+      各項目は以下を表す.
+      <ul class="nodots">
+	<li><var>course</var>:
+	  レースが行われたコースの記述で, 上述のコース記述と同じ形式である.
+	</li>
+	<li><var>name<sub>p</sub></var>:
+	  プレイヤ <var>p</var> の名称の文字列である.
+	</li>
+	<li><var>time<sub>p</sub></var>:
+	  プレイヤ <var>p</var> のゴールタイムである.
+	  ゴールタイムは十進数で, 小数部を持つ場合もある.
+	</li>
+	<li><var>log<sub>k</sub></var>:
+	  第 <var>k</var> ステップのログ情報, すなわち,
+	  当該ステップ前の状況, 両プレイヤのプレイ指示内容,
+	  およびプレイの結果の情報である.
+	</li>
+      </ul>
+    </p>
+    
+    <h3>ステップのログ</h3>
+    <p>
+      両プレイヤが共にレースを終えるまで
+      (ゴール・失格・制限ステップ数超過のいずれかとなるまで)
+      の各ステップについての情報が含まれており,
+      各ステップのログ情報は以下の形式である.
+      <blockquote>
+	<p>{</p>
+	<block>
+	  <p>"stepNumber": <var>stepNumber</var>,</p>
+	  <p>"before0":
+	    <var>before<sub>0</sub></var>,
+	  </p>
+	  <p>"before1":
+	    <var>before<sub>1</sub></var>,
+	  </p>
+	  <p>"accel0":
+	    <var>accel<sub>0</sub></var>,
+	  </p>
+	  <p>"accel1":
+	    <var>accel<sub>1</sub></var>,
+	  </p>
+	  <p>"result0":
+	    <var>result<sub>0</sub></var>,
+	  </p>
+	  <p>"result1":
+	    <var>result<sub>1</sub></var>,
+	  </p>
+	  <p>"after0":
+	    <var>after<sub>0</sub></var>,
+	  </p>
+	  <p>"after1":
+	    <var>after<sub>1</sub></var>
+	  </p>
+	</block>
+	<p>}</p>
+      </blockquote>
+      各項目は以下を表す.
+      <ul class="nodots">
+	<li><var>stepNumber</var>:
+	  当該ステップのステップ番号の整数値である.
+	  ステップ番号は0から始まる.
+	</li>
+	<li><var>before<sub>p</sub></var>:
+	  当該ステップの開始時のプレイヤ <var>p</var> の状態 (詳細は後述).
+	</li>
+	<li><var>accel<sub>p</sub></var>:
+	  当該ステップにおけるプレイヤ <var>p</var> の加減速指示 (詳細は後述).
+	</li>
+	<li><var>result<sub>p</sub></var>:
+	  当該ステップのプレイヤ <var>p</var> の動作結果 (詳細は後述).
+	</li>
+	<li><var>after<sub>p</sub></var>:
+	  当該ステップの終了時のプレイヤ <var>p</var> の状態 (詳細は後述).
+	</li>
+      </ul>
+    </p>
+
+    <h3>プレイヤの状態</h3>
+    <p>
+      ステップ開始時・終了時のプレイヤの状態
+      (<var>before<sub>p</sub></var> および <var>after<sub>p</sub></var>) は,
+      当該プレイヤが前ステップまでにゴールあるいは失格した場合には <code>null</code> であり,
+      それ以外の場合は以下の形式である.
+      <blockquote>
+	<p>{</p>
+	<block>
+	  <p>"x": <var>x</var>,</p>
+	  <p>"y": <var>y</var>,</p>
+	  <p>"vx": <var>v<sub>x</sub></var>,</p>
+	  <p>"vy": <var>v<sub>y</sub></var>,</p>
+	  <p>"timeLeft": <var>timeLeft</var></p>
+	</block>
+	<p>}</p>
+      </blockquote>
+      各項目はいずれも整数値で, 以下を表す.
+      <ul class="nodots">
+	<li><var>x</var>, <var>y</var>:
+	  プレイヤ <var>p</var> の位置の <var>x</var> および <var>y</var> 座標である.
+	  当該ステップでゴールしたプレイヤの <var>after</var> 内の項目は,
+	  ゴール直後の座標を示す.
+	</li>
+	<li><var>v<sub>x</sub></var>, <var>v<sub>y</sub></var>:
+	  プレイヤ <var>p</var> の速度の <var>x</var> および <var>y</var> 成分である.
+	</li>
+	<li><var>timeLeft</var>:
+	  プレイヤ <var>p</var> の残り考慮時間 (ミリ秒単位) である.
+	</li>
+      </ul>
+    </p>
+
+    <p>加減速指示 (<var>accel<sub>p</sub></var>) は,
+      当該プレイヤが前ステップまでにゴールした場合,
+      あるいは当該ステップまでに失格した場合は <code>null</code> であり,
+      それ以外の場合は以下の形式である.
+      <blockquote>
+	<p>{</p>
+	<block>
+	  <p>"ax": <var>a<sub>x</sub></var>,</p>
+	  <p>"ay": <var>a<sub>y</sub></var>,</p>
+	</block>
+	<p>}</p>
+      </blockquote>
+      両項目は <code>&minus;1</code>, <code>0</code>, <code>1</code> のいずれかで,
+      プレイヤ <var>p</var> が当該ステップにおいての指示した加速度の
+      <var>x</var> および <var>y</var> 成分である.
+    </p>
+
+    <h3>動作結果</h3>
+    <p>動作結果 (<var>result<sub>p</sub></var>) は以下の形式である.</p>
+    <blockquote>
+      <p>{</p>
+      <block>
+	<p>"category": <var>category</var>,</p>
+	<p>"info": <var>info</var></p>
+      </block>
+      <p>}</p>
+    </blockquote>
+
+    <p>
+      項目 <var>category</var> と対応する <var>info</var> の値は以下のいずれかである.
+    </p>
+    <ul class="nodots">
+      <li><code>normal</code>:
+	指示通りの加減速が行われ, 予定位置に到達した.
+	相手プレイヤと接触したが優先権を持っていた場合,
+	ゴールした場合も含む.
+	<var>info</var> は <code>null</code> になる.
+      </li>
+      <li><code>finished</code>:
+	前ステップまでにゴール済である.
+	<var>info</var> は <code>null</code> になる.
+      </li>
+      <li><code>disqualified</code>:
+	前ステップまでに失格している.
+	<var>info</var> は <code>null</code> になる.
+      </li>
+      <li><code>goneOff</code>:
+	コース幅の外に出ようとした.
+	<var>info</var> にはコース外に出ようとした座標 (<var>x, y</var>) の近似値が
+	<code>{"x": <var>x</var>, "y": <var>y</var>}</code> の形式で与えられる.
+	ここで <var>x</var> は, コース左側面の場合は 0, 右側面の場合はコース幅の整数値,
+	<var>y</var> はコース側面との衝突位置の <var>y</var> 座標で,
+	コース左下端を原点とする.
+      </li>
+      <li><code>obstacled</code>:
+	障害物と接触する動線であった.
+	<var>info</var> には接触する障害物の枡目の座標 (<var>x, y</var>) が
+	<code>{"x": <var>x</var>, "y": <var>y</var>}</code> の形式で与えられる.
+      </li>
+      <li><code>collided</code>:
+	相手プレイヤと動線が接触し, 優先権がなかった.
+	<var>info</var> には動線が接触した座標 (<var>x, y</var>) の近似値が
+	<code>{"x": <var>x</var>, "y": <var>y</var>}</code> の形式で与えられる.
+	コース左下端を原点とする.
+      </li>
+      <li><code>timedOut</code>:
+	当該ステップ中に考慮時間の合計が制限超過した.
+	<var>info</var> は <code>null</code> になる.
+      </li>
+      <li><code>invalid</code>:
+	プレイヤからの加減速指示が規定に外れた不正なものである.
+	<var>info</var> にはプレイヤから送れられた不正な指示の文字列が入る.
+      </li>
+    </ul>
+  </body>
+</html>

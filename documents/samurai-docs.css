@@ -19,3 +19,11 @@ th { text-align: center; }
 table { border-spacing: 30px 5px; }
 img { padding: 1px; border: none; }
 .notice { background-color: darkred; color: yellow; text-align: center; }
+blockquote { margin: 3px 20px; padding: 0px; font-family: Courier; color: #00F; }
+blockquote p { margin: 0px; padding: 0px; }
+blockquote block { text-indent: 20px; }
+var { font-family: Roman; color: darkred; }
+code { font-family: Courier; color: #00F; }
+.nodots { list-style-type: none; }
+.nodots li { padding-left: 1em; text-indent: -1em; }
+.abstract { margin: auto; width: 80%; }

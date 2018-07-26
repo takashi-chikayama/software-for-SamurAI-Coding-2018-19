@@ -95,12 +95,16 @@ function loadFile(evt) {
 	startPos[0] = data.x0;
 	startPos[1] = data.x1;
 	newCourse(data.width, data.length);
-	data.obstacles.forEach(function (o) {
-	  squares[o.y][o.x].state = 1;
+	var x = 0, y = 0;
+	data.squares.forEach(function (s) {
+	  squares[y][x].state = s;
+	  x ++;
+	  if (x == data.width) {
+	    x = 0; y++;
+	  }
 	});
-	data.waterjumps.forEach(function (w) {
-	  squares[w.y][w.x].state = 2;
-	});
+	squares[0][data.x0].state = 3;
+	squares[0][data.x1].state = 4;
       }
       standardView();
     };
@@ -140,18 +144,12 @@ function writeFile(evt) {
 }
 
 function encodeCourse() {
-  var obsts = [];
-  var jumps = [];
+  var squareKinds = [];
   for (var y = 0; y != courseLength; y++) {
     for (var x = 0; x != courseWidth; x++) {
-      switch (squares[y][x].state) {
-      case 1:
-	obsts.push({x: x, y: y});
-	break;
-      case 2:
-	jumps.push({x: x, y: y});
-	break;
-      }
+      var s = squares[y][x].state;
+      if (s > 2) s = 0;
+      squareKinds.push(s);
     }
   }
   return {
@@ -163,8 +161,7 @@ function encodeCourse() {
     "stepLimit": document.getElementById("stepLimit").value,
     "x0": startPos[0],
     "x1": startPos[1],
-    "obstacles": obsts,
-    "waterjumps": jumps
+    "squares": squareKinds
   };
 }
   
