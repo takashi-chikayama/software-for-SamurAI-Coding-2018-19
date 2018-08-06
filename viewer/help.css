@@ -1,0 +1,37 @@
+b { color: darkred; }
+table td { text-align: center; vertical-align: middle; }
+.alignleft { text-align: left; }
+body { counter-reset: figno; }
+h1 { counter-reset: section; text-align: center; }
+h2 { counter-reset: subsection; }
+h2:before {
+    counter-increment: section;
+    content: counter(section) ". ";
+}
+h3:before {
+    counter-increment: subsection;
+    content: counter(section) "." counter(subsection) " "; }
+.centered { text-align: center; }
+figure { counter-increment: fig; }
+figcaption { text-align: center; }
+figcaption:before { content: "図"counter(fig)": ";}
+th { text-align: center; }
+table { border-spacing: 30px 5px; }
+img { padding: 1px; border: none; }
+.notice { background-color: darkred; color: yellow; text-align: center; }
+blockquote { margin: 3px 20px; padding: 0px; font-family: Courier; color: #00F; }
+blockquote p { margin: 0px; padding: 0px; }
+blockquote block { text-indent: 20px; }
+var { font-family: Roman; color: darkred; }
+code { font-family: Courier; color: #00F; }
+.buttonName {
+    padding: 2px 2px 0px 2px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: #AAA #222 #222 #AAA;
+    font-family: Courier;
+}
+.nodots { list-style-type: none; }
+.nodots li { padding-left: 1em; text-indent: -1em; }
+.abstract { margin: auto; width: 80%; }
+.flushright { text-align: "right"}

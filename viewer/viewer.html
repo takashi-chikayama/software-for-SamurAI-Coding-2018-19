@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>SamurAI Jockey 2018 Race Viewer</title>
+    <script src="viewer.js"></script>
+    <link rel="stylesheet" type="text/css" href="viewer.css">
+  </head>
+  <body onresize="bodyResized()">
+    <div id="buttons">
+      <button id="load" onclick="document.getElementById('fileInput').click();">
+	Load Log</button>
+      <input type="file" style="display:none" id="fileInput"
+	     onchange="loadFile(event)">
+      <button id="rewind" onclick="rewind(event)">&lt;&lt;</button>
+      <button id="back" onclick="stepBackward(event)">&lt;</button>
+      <button id="startStop" onclick="startStop(event)">Start</button>
+      <button id="forward" onclick="stepForward(event)">&gt;</button>
+      <input type="range" onchange="setPlaybackSpeed(this.value)"
+	     id="speedSlider"
+	     step="8" min="24" max="480" value="120">
+      <span class="textInButtons">
+	<span id="stepsPerMin">120</span>
+	steps/min
+	&ensp;
+	Show:
+      </span>
+      <select name="option" onchange="changeViewOption(this)">
+        <option value="visible">visible range</option>
+        <option value="ahead3">visible+3</option>
+        <option value="follower">follower</option>
+      </select>
+      <button id="help" onclick="location.href='help-jp.html'">Help</button>
+    </div>
+    <div id="raceState" style='margin-top:5px'>
+      <img src='icons/clock.png' alt='clock: ' width='20px' height='20px'
+	   style='margin-bottom:-4pt'/>
+      <font color='black'><span id='stepNumber'>0</span></font>
+      <font color='red'><span id='name0'></span>
+	<span id='position0'></span></font>
+      <font color='blue'><span id='name1'></span>
+	<span id='position1'></span></font>
+    </div>
+    <div id="courseDiv">
+    </div>
+    <script>
+    </script>
+  </body>
+</html>

@@ -1,0 +1,51 @@
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    overflow: hidden;
+}
+#buttons {
+    width: 100%;
+    height: 20px;
+    margin: 0px;
+    padding: 10px;
+    background: #642;
+    border-style: outset;
+}
+#buttons button {
+    vertical-align: middle;
+}
+.textInButtons {
+    color: #FF8;
+}
+#speedSlider {
+    width: 80px;
+    height: 10px;
+}
+#raceState {
+    width: 100%;
+    height: 20px;
+    margin: 0px;
+    padding: 10px;
+    background: #DDD;
+    font-weight: bold;
+    border-style: outset;
+}
+#courseDiv {
+    width: 100%;
+    margin-top: 2px;
+    height: calc(100% - 102px);
+    position: absolute;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+#visionScreen {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    background-color: #FFF8;
+    border: none;
+    z-index: 10;
+}
