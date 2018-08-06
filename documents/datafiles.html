@@ -38,7 +38,7 @@
 	  1レースの経緯と結果を記録するための形式.
 	  通常 official が書き出したものを viewer で読み込んで表示するのに用いる.
 	</dd>
-      </ul>
+      </dl>
     </p>
 
     <h2>コース記述</h2>
@@ -53,8 +53,7 @@
 	  <p>"vision": <var>vision</var>,</p>
 	  <p>"thinkTime": <var>thinkTime</var>,</p>
 	  <p>"stepLimit": <var>stepLimit</var>,</p>
-	  <p>"x0": <var>x<sub>0</sub></var>,</p>
-	  <p>"x1": <var>x<sub>1</sub></var>,</p>
+	  <p>"start": [<var>x<sub>0</sub></var>, <var>x<sub>1</sub></var>],</p>
 	  <p>"squares": [
 	    <var>s<sub>0,0</sub></var>,
 	    <var>&hellip;</var>,
@@ -70,7 +69,7 @@
       </blockquote>
       ここで <var>w</var> はコースの幅, <var>l</var> はコースの長さ,
       <var>vision</var> は視界距離,
-      <var>thinkTime</var> は考慮時間,
+      <var>thinkTime</var> は考慮時間 (秒単位),
       <var>stepLimit</var> は制限ステップ数,
       <var>x<sub>p</sub></var> はプレイヤ <var>p</var> の初期位置の
       <var>x</var> 座標である.
@@ -93,10 +92,10 @@
 	<block>
 	  <p>"filetype": "race log",</p>
 	  <p>"course": <var>course</var>,</p>
-	  <p>"name0": <var>name<sub>0</sub></var>,</p>
-	  <p>"name1": <var>name<sub>1</sub></var>,</p>
-	  <p>"time0": <var>time<sub>0</sub></var>,</p>
-	  <p>"time1": <var>time<sub>1</sub></var>,</p>
+	  <p>"names": [<var>name<sub>0</sub></var>,
+	    <var>name<sub>1</sub></var>],</p>
+	  <p>"finished": [<var>time<sub>0</sub></var>,
+	    <var>time<sub>1</sub></var>],</p>
 	  <p>"log": [
 	    <var>log<sub>0</sub></var>,
 	    <var>log<sub>1</sub></var>,
@@ -135,29 +134,15 @@
 	<p>{</p>
 	<block>
 	  <p>"stepNumber": <var>stepNumber</var>,</p>
-	  <p>"before0":
-	    <var>before<sub>0</sub></var>,
-	  </p>
-	  <p>"before1":
-	    <var>before<sub>1</sub></var>,
-	  </p>
-	  <p>"accel0":
-	    <var>accel<sub>0</sub></var>,
-	  </p>
-	  <p>"accel1":
-	    <var>accel<sub>1</sub></var>,
-	  </p>
-	  <p>"result0":
-	    <var>result<sub>0</sub></var>,
-	  </p>
-	  <p>"result1":
-	    <var>result<sub>1</sub></var>,
-	  </p>
-	  <p>"after0":
-	    <var>after<sub>0</sub></var>,
-	  </p>
-	  <p>"after1":
-	    <var>after<sub>1</sub></var>
+	  <p>"visibility": <var>visibility</var>,</p>
+	  <p>"before": [<var>before<sub>0</sub></var>,
+	    <var>before<sub>1</sub></var>],</p>
+	  <p>"accel": [<var>accel<sub>0</sub></var>,
+	    <var>accel<sub>1</sub></var>],</p>
+	  <p>"result": [<var>result<sub>0</sub></var>,
+	    <var>result<sub>1</sub></var>],</p>
+	  <p>"after": [<var>after<sub>0</sub></var>,
+	    <var>after<sub>1</sub></var>]
 	  </p>
 	</block>
 	<p>}</p>
@@ -167,6 +152,10 @@
 	<li><var>stepNumber</var>:
 	  当該ステップのステップ番号の整数値である.
 	  ステップ番号は0から始まる.
+	</li>
+	<li><var>visibility</var>
+	  当該ステップ開始時の視界の範囲を意味する整数値.
+	  <var>y</var>&nbsp;&lt;&nbsp;<var>visibility</var> の範囲が視界に入る.
 	</li>
 	<li><var>before<sub>p</sub></var>:
 	  当該ステップの開始時のプレイヤ <var>p</var> の状態 (詳細は後述).
@@ -205,7 +194,7 @@
 	<li><var>x</var>, <var>y</var>:
 	  プレイヤ <var>p</var> の位置の <var>x</var> および <var>y</var> 座標である.
 	  当該ステップでゴールしたプレイヤの <var>after</var> 内の項目は,
-	  ゴール直後の座標を示す.
+	  ゴール後の座標 (<var>y</var> &ge; <var>l</var>) を示す.
 	</li>
 	<li><var>v<sub>x</sub></var>, <var>v<sub>y</sub></var>:
 	  プレイヤ <var>p</var> の速度の <var>x</var> および <var>y</var> 成分である.
@@ -216,9 +205,10 @@
       </ul>
     </p>
 
-    <p>加減速指示 (<var>accel<sub>p</sub></var>) は,
-      当該プレイヤが前ステップまでにゴールした場合,
-      あるいは当該ステップまでに失格した場合は <code>null</code> であり,
+    <h3>加減速指示</h3>
+    <p>
+      加減速指示 (<var>accel<sub>p</sub></var>) は,
+      当該プレイヤが前ステップまでにゴールあるいは失格場合には <code>null</code> であり,
       それ以外の場合は以下の形式である.
       <blockquote>
 	<p>{</p>
@@ -234,61 +224,70 @@
     </p>
 
     <h3>動作結果</h3>
-    <p>動作結果 (<var>result<sub>p</sub></var>) は以下の形式である.</p>
-    <blockquote>
-      <p>{</p>
-      <block>
-	<p>"category": <var>category</var>,</p>
-	<p>"info": <var>info</var></p>
-      </block>
-      <p>}</p>
-    </blockquote>
+    <p>
+      動作結果 (<var>result<sub>p</sub></var>) は,
+      当該プレイヤが前ステップまでにゴールあるいは失格した場合には <code>null</code> であり,
+      それ以外の場合は以下の形式である.
+      <blockquote>
+	<p>{</p>
+	<block>
+	  <p>"category": <var>category</var>,</p>
+	  <p>"info": <var>info</var></p>
+	</block>
+	<p>}</p>
+      </blockquote>
+    </p>
 
     <p>
       項目 <var>category</var> と対応する <var>info</var> の値は以下のいずれかである.
+      言及がない場合 <var>info</var> は <code>null</code> になる.
+      <ul class="nodots">
+	<li><code>normal</code>:
+	  指示通りの加減速が行われ, 予定位置に到達した.
+	  相手プレイヤと接触したが優先権を持っていた場合,
+	  ゴールした場合も含む.
+	</li>
+	<li><code>finished</code>:
+	  前ステップまでにゴール済である.
+	</li>
+	<li><code>disqualified</code>:
+	  前ステップまでに失格している.
+	</li>
+	<li><code>goneOff</code>:
+	  コース幅の外に出ようとした.
+	  <var>info</var> にはコース外に出ようとした座標 (<var>x, y</var>) の近似値が
+	  <code>{"x": <var>x</var>, "y": <var>y</var>}</code> の形式で与えられる.
+	  ここで <var>x</var> は, コース左側面の場合は 0, 右側面の場合はコース幅の整数値,
+	  <var>y</var> はコース側面との衝突位置の <var>y</var> 座標で,
+	  コース左下端を原点とする.
+	</li>
+	<li><code>obstacled</code>:
+	  障害物と接触する動線であった.
+	  <var>info</var> には接触する障害物の枡目の座標 (<var>x, y</var>) が
+	  <code>{"x": <var>x</var>, "y": <var>y</var>}</code> の形式で与えられる.
+	</li>
+	<li><code>collided</code>:
+	  相手プレイヤと動線が接触し, 優先権がなかった.
+	  <var>info</var> には動線が接触した座標 (<var>x, y</var>) の近似値が
+	  <code>{"x": <var>x</var>, "y": <var>y</var>}</code> の形式で与えられる.
+	  コース左下端を原点とする.
+	</li>
+	<li><code>timedOut</code>:
+	  当該ステップ中に考慮時間の合計が制限超過した.
+	</li>
+	<li><code>died</code>
+	  当該ステップ中に応答を受け取る前にAIプロセスが終了した.
+	</li>
+	<li><code>invalid</code>:
+	  プレイヤからの加減速指示が規定に外れた不正なものである.
+	  <var>info</var> にはプレイヤから送れられた不正な指示の文字列が入る.
+	</li>
+      </ul>
     </p>
-    <ul class="nodots">
-      <li><code>normal</code>:
-	指示通りの加減速が行われ, 予定位置に到達した.
-	相手プレイヤと接触したが優先権を持っていた場合,
-	ゴールした場合も含む.
-	<var>info</var> は <code>null</code> になる.
-      </li>
-      <li><code>finished</code>:
-	前ステップまでにゴール済である.
-	<var>info</var> は <code>null</code> になる.
-      </li>
-      <li><code>disqualified</code>:
-	前ステップまでに失格している.
-	<var>info</var> は <code>null</code> になる.
-      </li>
-      <li><code>goneOff</code>:
-	コース幅の外に出ようとした.
-	<var>info</var> にはコース外に出ようとした座標 (<var>x, y</var>) の近似値が
-	<code>{"x": <var>x</var>, "y": <var>y</var>}</code> の形式で与えられる.
-	ここで <var>x</var> は, コース左側面の場合は 0, 右側面の場合はコース幅の整数値,
-	<var>y</var> はコース側面との衝突位置の <var>y</var> 座標で,
-	コース左下端を原点とする.
-      </li>
-      <li><code>obstacled</code>:
-	障害物と接触する動線であった.
-	<var>info</var> には接触する障害物の枡目の座標 (<var>x, y</var>) が
-	<code>{"x": <var>x</var>, "y": <var>y</var>}</code> の形式で与えられる.
-      </li>
-      <li><code>collided</code>:
-	相手プレイヤと動線が接触し, 優先権がなかった.
-	<var>info</var> には動線が接触した座標 (<var>x, y</var>) の近似値が
-	<code>{"x": <var>x</var>, "y": <var>y</var>}</code> の形式で与えられる.
-	コース左下端を原点とする.
-      </li>
-      <li><code>timedOut</code>:
-	当該ステップ中に考慮時間の合計が制限超過した.
-	<var>info</var> は <code>null</code> になる.
-      </li>
-      <li><code>invalid</code>:
-	プレイヤからの加減速指示が規定に外れた不正なものである.
-	<var>info</var> にはプレイヤから送れられた不正な指示の文字列が入る.
-      </li>
-    </ul>
+    <div class="flushright">
+      <p style="text-align: right">
+	以上
+      </p>
+    </div>
   </body>
 </html>

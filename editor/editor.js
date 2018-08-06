@@ -156,9 +156,9 @@ function encodeCourse() {
     "filetype": courseFileType,
     "width": courseWidth,
     "length": courseLength,
-    "vision": document.getElementById("visionRange").value,
-    "thinkTime": document.getElementById("thinkTime").value,
-    "stepLimit": document.getElementById("stepLimit").value,
+    "vision": parseInt(document.getElementById("visionRange").value),
+    "thinkTime": parseInt(document.getElementById("thinkTime").value),
+    "stepLimit": parseInt(document.getElementById("stepLimit").value),
     "x0": startPos[0],
     "x1": startPos[1],
     "squares": squareKinds

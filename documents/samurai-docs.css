@@ -27,3 +27,4 @@ code { font-family: Courier; color: #00F; }
 .nodots { list-style-type: none; }
 .nodots li { padding-left: 1em; text-indent: -1em; }
 .abstract { margin: auto; width: 80%; }
+.flushright { text-align: "right"}
