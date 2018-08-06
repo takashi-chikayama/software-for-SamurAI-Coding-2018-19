@@ -248,7 +248,7 @@ function showStep() {
     for (var p = 0; p != 2; p++) {
       hidePlayerIcon(p);
       document.getElementById("position"+p).innerHTML =
-	"finished in "+times[p].toFixed(2) + "steps";
+	"finished in "+times[p].toFixed(2) + " steps";
     }
     // Scroll to the top
     courseDiv.scrollTop = 0;
@@ -269,7 +269,7 @@ function showStep() {
     } else {
       hidePlayerIcon(p);
       document.getElementById("position"+p).innerHTML =
-	"finished with "+times[p].toFixed(2);
+	"finished in "+times[p].toFixed(2) + " steps";
     }
     switch (step.result[p].category) {
     case "finished":
@@ -340,7 +340,8 @@ function stepBackward() {
 }
 
 var timerPlay = -1;
-var stepsPerMin = 120;
+const initialStepsPerMin = 120;
+var stepsPerMin = initialStepsPerMin;
 
 function startStop(evt) {
   if (timerPlay === -1) {
@@ -376,19 +377,23 @@ function rewind() {
 
 function setPlaybackSpeed(s) {
   document.getElementById("stepsPerMin").innerHTML = s;
-  horseSteps.playbackRate = Math.sqrt(value/initialStepsPerMin);
   stepsPerMin = s;
-  if (timerPlaye != -1) {
+  horseSteps.playbackRate = Math.sqrt(stepsPerMin/initialStepsPerMin);
+  bgm.playbackRate = Math.sqrt(stepsPerMin/initialStepsPerMin);
+  if (timerPlay != -1) {
     stopPlay();
     startPlay();
   }
 }
 
 const soundLocation = "sound/";
-const soundType = ".wav";
 
 function loadAudio(src, volume, loop) {
   const audio = new Audio();
+  const soundType =
+	audio.canPlayType("audio/mpeg") == "probably" ||
+	audio.canPlayType("audio/mpeg") == "maybe" ? ".mp3" :
+	".wav";
   audio.src = soundLocation + src + soundType;
   audio.load();
   audio.volume = volume;
