@@ -1,4 +1,5 @@
 b { color: darkred; }
+em { color: darkred; }
 table td { text-align: center; vertical-align: middle; }
 .alignleft { text-align: left; }
 body { counter-reset: figno; }
@@ -14,7 +15,7 @@ h3:before {
 .centered { text-align: center; }
 figure { counter-increment: fig; }
 figcaption { text-align: center; }
-figcaption:before { content: "図"counter(fig)": ";}
+figcaption:before { content: "Fig. "counter(fig)": ";}
 th { text-align: center; }
 table { border-spacing: 30px 5px; }
 img { padding: 1px; border: none; }
@@ -27,4 +28,12 @@ code { font-family: Courier; color: #00F; }
 .nodots { list-style-type: none; }
 .nodots li { padding-left: 1em; text-indent: -1em; }
 .abstract { margin: auto; width: 80%; }
-.flushright { text-align: "right"}
+.flushright { text-align: right}
+.input-example {
+    border:1px solid blue; background: #FFC; padding-left: 10px;
+    font-size: 90%;
+}
+.output-example {
+    border:1px solid blue; background: #CFF; padding-left: 10px;
+    font-size: 90%;
+}

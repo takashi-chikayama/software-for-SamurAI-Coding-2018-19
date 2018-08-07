@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" type="text/css" href="samurai-docs.css">
+  </head>
+  <body>
+    <h1>SamurAI Jockey 2018 Game Rules (draft)</h1>
+    <div class='centered'>
+      August XXth, 2018<br>
+      IPSJ Programming Contest Committee
+    </div>
+    <div class="abstract">
+      <p>
+      The rules of the games competed in the SamurAI Coding
+      2018&ndash;19 are described here.  Note that this is a draft
+      subject to change.
+      </p>
+    </div>
+
+    <h2>Game Outline</h2>
+    <p>
+      A <em>race</em> is a game with two players, starting from the
+      specified positions, repeating acceleration or deceleration in
+      each step, competing to pass the goal line faster throught the
+      race course with obstacles and muddy water jumps.  Actions of the
+      players are decided, step by step, by AI programs.
+    </p>
+    <p>
+      One <em>match</em> consists of two races with the same players
+      with the same race course, and with start positions
+      interchanged.  The winner of the match is one with smaller sum
+      of <em>goal times</em> of two races.  When the sums are equal,
+      the match is a draw.
+    </p>
+
+    <figure style="float:right; width: 50%;">
+      <img src="../screenshots/sample-course.png"
+	   style="width: 100%; object-fit: scale-down">
+      <figcaption>Race Course Example</figcaption>
+      <p style="margin: 10px">
+	This course has the width of 16 and the length of 20, with two
+	players positioned in the squares at (0,&nbsp;3) and
+	(0,&nbsp;7).
+      </p>
+    </figure>
+
+    <h2>Race Course</h2>
+    <p>
+      A race course consists of a number of squares arranged as a
+      two-dimensional grid, some of which are obstacled or muddy.
+      Race courses in different matches may have different width
+      and/or length, and different numbers and positions of obstacled
+      and muddy squares.  In what follows, <var>w</var> represents the
+      width of a course and <var>l</var> represents the length of the
+      course.  Each of the squares have coordinates of
+      (<var>x,&nbsp;y</var>).
+    </p>
+    <p>
+      At the start and the end of each race step, the players are on
+      one of the squares.  Players can never go out of the race course
+      width, i.e.,
+      0&nbsp;&lt;&nbsp;<var>x</var>&nbsp;&ge;&nbsp;<var>w</var> holds
+      for the <var>x</var> coordinate of the square a player is on.
+      When a player finishes when it reaches a square
+      with <var>y</var>&nbsp;&ge;&nbsp;<var>l</var>.
+      Note that players can go to squares behind the start position with
+      <var>y</var>&nbsp;&lt;&nbsp;0.
+    </p>
+    <p>
+      On start of a race, two players are on squares
+      with their <var>y</var> coordinates 0 and with different
+      <var>x</var> coordinates.
+    </p>
+    <p>
+      Some of the squares on the course are <em>obstacled</em>
+      or <em>muddy</em>.  The obstacled and muddy squares are fixed
+      and never change their positions during a race.  Their
+      coordinates satisfy
+      0&nbsp;&le;&nbsp;<var>x</var>&lt;&nbsp;<var>w</var> and
+      0&nbsp;&le;&nbsp;<var>y</var>&lt;&nbsp;<var>l</var>, i.e., they
+      are not located outside of the course width, not behind the
+      start positions, nor beyond the goal.
+      Squares not being obstacled nor muddy are <em>flat</em>.
+    </p>
+    <p>
+      The figure to the right shows an example of a race course.
+      Icons on squares mean the following.
+      <table style="border-spacing: 20px">
+	<tr>
+	  <td><img src="../icons/lawn.png" width="36px"></td>
+	  <td><img src="../icons/obstacle.png" width="36px"></td>
+	  <td><img src="../icons/jump.png" width="36px"></td>
+	  <td><img src="../icons/withPlayer0.png" width="36px"></td>
+	  <td><img src="../icons/withPlayer1.png" width="36px"></td>
+	</tr>
+	<tr>
+	  <td>Flat</td>
+	  <td>Obstacled</td>
+	  <td>Muddy</td>
+	  <td colspan="2">Player Positions</td>
+	</tr>
+	<tr>
+	</tr>
+      </table>
+    </p>
+
+    <p>
+      There are no dead ends in the course, i.e., for all of the
+      squares reachable from the start positions of two players, it is
+      possible to reach a square with larger <var>y</var> coordinate
+      without backtracking (without going to squares with
+      smaller <var>y</var> coordinate value), with velocity small
+      enough.
+    </p>
+
+    <h2>Limited Vision</h2>
+    <p>
+      AI are informed which squares are flat, obstacled or muddy, however,
+      the squares for which such information provided are those with their
+      <var>y</var> coordinates smaller than the value of <em>vision
+      limit</em>.  The vision limit is the maximum of the <var>y</var>
+      coordinates of squares either of the players reached before the
+      step plus the <em>vision distance</em> defined with the race
+      course.
+    </p>
+    <p>
+      As the vision limit is decided on the maximum <var>y</var>
+      coordinate either of the players has reached, it will increase
+      when one of the player proceeds to a square with
+      larger <var>y</var>.  The vision limit will <em>not</em>
+      decrease even if players go back to squares with
+      smaller <var>y</var>.
+    </p>
+    <p>
+      The vision limit for both of the players are the same, and thus
+      two players receive the same information on the race course.
+    </p>
+    <p>
+      In the above figure of an example race course, the squares in
+      the upper half tinted white mean that they are out of the vision
+      limit.  In this example, the vision distance is 10.
+    </p>
+
+    <h2>Race Process</h2>
+    <p>
+      At each step of a race, AIs are given information on the state
+      of the race and respond with acceleration/deceleration
+      instructions.  The players are accelerated or decelerated
+      according to the instructions and the race state will be updated
+      accordingly.  Such steps are repeated until both of the players
+      finish or are disqualified.  if the race does not end, however,
+      after steps are repeated beyond the step count limit defined for
+      the course, the race ends immediately and unfinished players are
+      disqualified.
+    </p>
+
+    <h3>Think Time</h3>
+    <p>
+      Certain limit is imposed on the total <em>think time</em> an AI
+      can use in a single race.  The think time is the physical wall
+      clock time period between when the game management system
+      finished sending the race state information to the AI and when
+      it finished receiving acceleration/deceleration instruction from
+      the AI.  When the total think time exceeds the limit, the player
+      is disqualified.
+    </p>
+
+    <h3>Player States</h3>
+    <p>
+      A players has its <em>position</em> and <em>velocity</em> as its
+      state at the start of each step.  Positions and velocities are
+      two-dimensional vectors, components of which are integral.  Let
+      (<var>x,&nbsp;y</var>) be the position and
+      (<var>v<sub>x</sub>,&nbsp;v<sub>y</sub></var>) be the velocity
+      of a player at the start of a step.
+    </p>
+    <p>
+      The state at the start of a step is the same as the state at the
+      end of the step immediately before, except that, for the first
+      step of a race, the position is as specified in the course and
+      the velocity is (0,&nbsp;0).
+    </p>
+
+    <h3>Acceleration and Planned Position</h3>
+    <p>
+      At each step, AI instructs <em>acceleration</em> (or
+      deceleration) to change its velocity
+      (<var>a<sub>x</sub>,&nbsp;a<sub>y</sub></var>).
+      Here, <var>a<sub>x</sub> and a<sub>y</sub></var> are one of
+      &minus;1, 0, 1.  The square with the coordinates
+      (<var>x+v<sub>x</sub>+a<sub>x</sub>,&nbsp;y+v<sub>y</sub>+a<sub>y</sub></var>)
+      is called the <em>planned position</em> of the player.  Except
+      for when the player is stopped by going off course or by
+      collision with the other player (see below for details), the
+      player will be on the planned position at the end of the step.
+      When the planned position is muddy, the velocity of the player
+      at the end fo the step will be (0,&nbsp;0); when not, it will be
+      (<var>v<sub>x</sub>+a<sub>x</sub>,&nbsp;v<sub>y</sub>+a<sub>y</sub></var>).
+    </p>
+
+    <figure style="float:right; width: 20%">
+      <img src="../screenshots/off-the-track.png"
+	   style="margin: auto; width: 100%; height: 100%;
+		  object-fit: scale-down">
+      <figcaption>Going off course</figcaption>
+    </figure>
+
+    <h3>Move Lines and Going Off Course</h3>
+    <p>
+      The line segment connecting the centers of the square a player
+      is positioned at the start of a step and that of the planned
+      position is called the <em>move line</em> of the player at
+      the step.
+    </p>
+    <p>
+      The player is said to have <em>gone off course</em> if any of
+      the folowing cases.
+      <ul>
+	<li>
+	  The planned position is out of the width of the course, i.e.,
+	  when the <var>x</var> coordinate of the planned position
+	  does not satifsy
+	  0&nbsp;&le;&nbsp;<var>x</var>&nbsp;&lt&nbsp;<var>w</var>.
+	</li>
+	<li>
+	  The move line crosses or touches an obstacled square.
+	</li>
+      </ul>
+      In the figure to the right, red movements,
+      a, b, c, and d go off course, while
+      blue movements e and f are not.
+      The movements a and b crosses an obstacled square
+      and the movement c touches a corner of an obstacled square.
+      The movement d goes otu of the width of the course.
+    </p>
+    <p>
+      When a player goes off course, its position at end of the step
+      does not change from that at the start of the step.
+      Its velocity will be (0,&nbsp;0), i.e., it will be stopped.
+    </p>
+
+    <h3>Collisions and Priority</h3>
+    <p>
+      When both players do not go off course and their move lines
+      cross or touch each other, a <em>collision</em> is taken place.
+    </p>
+    <p>
+      On a collsion, the player with <em>priority</em> can move to its
+      planned position, while the other will be stopped on its
+      original position with the velocity of (0,&nbsp;0).
+    </p>
+
+    <figure style="float:right; width: 45%; margin: 0px 0px 10px 10px;">
+      <table style="padding: 10px; spacing: 0px;">
+	<tr>
+	  <td>
+	    <img src="../screenshots/collision-1.png"
+		 style="width: 100%; object-fit: scale-down">
+	  </td>
+	  <td>
+	    <img src="../screenshots/collision-2.png"
+		 style="width: 100%; object-fit: scale-down">
+	  </td>
+	</tr>
+	<tr>
+	  <td>Case 1</td>
+	  <td>Case 2</td>
+	</tr>
+	<tr>
+	  <td>
+	    <img src="../screenshots/collision-3.png"
+		 style="width: 100%; object-fit: scale-down">
+	  </td>
+	  <td>
+	    <img src="../screenshots/collision-4.png"
+		 style="width: 100%; object-fit: scale-down">
+	  </td>
+	</tr>
+	<tr>
+	  <td>Case 3</td>
+	  <td>Case 4</td>
+	</tr>
+      </table>
+      <figcaption>Collisions and Priroity</figcaption>
+    </figure>
+
+    <p>
+      The player with the priority is one with smaller <var>y</var>
+      coordinate value at the start of the step.  When both are with
+      the same <var>y</var> coordinate value, one with the
+      smaller <var>x</var> coordinate value is granted the priority.
+      An exception is when the move line crosses or touches the
+      square in which the opponent is positioned at the start of the
+      step.  In this case, the priority is granted to the opponent.
+    </p>
+    <p>
+      When both of the move lines cross or touch the squares
+      in which the opponents are positioned at the start of the step,
+      both lose the priority; their positions at the end of the step
+      will be the same as those at the start of the step, and their
+      velocities will be (0,&nbsp;0).
+    </p>
+    <p>
+      Examples depicted in the figure to the right are interpreted as
+      follows.
+      <ul>
+	<li>
+	  In Case 1, the player with the blue move line has
+	  smaller <var>y</var> coordinate at the start of the step,
+	  this player is granted the priority.
+	</li>
+	<li>
+	  In Case 2, the player with the red move line crosses the
+	  square of the opponent's position at the start of the step,
+	  the player with the blue move line is granted the priority.
+	</li>
+	<li>
+	  In Case 3, the move line of the player with smaller
+	  <var>y</var> coordinate value goes throught the square of
+	  the opponent's position at the start of the step, but two
+	  move lines do not cross nor touch each other, and thus
+	  no collision took place.
+	</li>
+	<li>
+	  In Case 4, a collision takes place.  Both move lines crosses
+	  or touches the squares of the opponents' position at the
+	  start of the step, positions of both players at the end of
+	  the step are left the same as those at the start of the
+	  step, and their velocities will be (0,&nbsp;0).
+	</li>
+      </ul>
+    </p>
+
+    <h3>Muddy Square</h3>
+    <p>
+      When a player is positioned in a muddy square at the end of the
+      step, its velocity will become (0,&nbsp;0).  Thus, starting from
+      a muddy square with coordinates
+      (<var>x</var>,&nbsp;<var>y</var>), the planned position will be
+      restricted to the range
+      (<var>x</var>&plusmn;1,&nbsp;<var>y</var>&plusmn;1).
+    </p>
+
+    <h3>Goal and Goal Time</h3>
+    <p>
+      When a player is positioned at a square with coodinates
+      (<var>x</var>,&nbsp;<var>y</var>) at the start of a
+      step <var>s</var>, and reached the position
+      (<var>x'</var>,&nbsp;<var>y'</var>) at the end of the step where
+      <var>y'</var>&nbsp;&ge;&nbsp;<var>l</var>, the player is said to
+      have goaled.
+      The <em>goal time</em> of the player is given by
+      <var>s</var>&nbsp;+&nbsp;(<var>l</var>&nbsp;&minus;&nbsp;<var>y</var>)&nbsp;/&nbsp;(<var>y'</var>&nbsp;&minus;&nbsp;<var>y</var>).
+    </p>
+    <p>
+      If the opponent player has not goaled nor disqualified at this
+      time, the race will be continued with the goaled playered
+      removed from the course.
+    </p>
+
+    <h3>Disqualification</h3>
+    <p>
+      In any of the following cases, 
+      a player is <em>disqualified</em> for the race.
+    </p>
+    <ul>
+      <li> The player could not goal within the step count limit.</li>
+      <li> The player's think time exceeded the limit.</li>
+      <li> The player's response did not accord with the specification.</li>
+    </ul>
+    <p>
+      If the opponent player has not goaled nor disqualified at this
+      time, the race will be continued with the goaled playered
+      removed from the course.  The goal time of the disqualified
+      player is twice the step count limit.
+    </p>
+    <p>
+      Disqualification is only for one race;
+      the player can participate any following races as usual.
+    </p>
+
+    <h2>Interface with AI</h2>
+    <p>
+      At initiation of a race, AI reads in the information of the
+      race as a whole, and, when it has completed its intiation,
+      responds an acknowledgement.  At each step, AI reads in the
+      information of the race state and responds to it with
+      acceleration instruction.  Such exchanges are not made in steps
+      after the player controlled by the AI goals or is disqualified.
+    </p>
+    <p>
+      The input to AI are sequences of a number of decimal integers,
+      separated with a blank space or a newline.  For negative numbers, a
+      minus sign is prepositioned.  A newline is placed after the last
+      integer in the input on intiation and on each of the steps.
+    </p>
+    <p>
+      The response of AI is also a sequence of decimal integers
+      separated with a blank space or a newline, possibly preceded by
+      a minus sign to indicte negative numbers.
+      <em>A newline should be output at the end of the response.</em>
+    </p>
+
+    <figure style="float:right; margin: 0px 0px 10px 10px;">
+      <p class="input-example">
+	<code>
+	  120000<br>
+	  100<br>
+	  16 20<br>
+	  10
+	</code>
+      </p>
+    <figcaption>Input at Initiation</figcaption>
+    </figure>
+
+    <h3>Input at Initiation</h3>
+    <p>
+      The input of AI at initiation has the following items in this order.
+      <ul>
+	<li>
+	  Think time: The total think time allowed in this race,
+	  as an integer in units of milliseconds.
+	</li>
+	<li>
+	  Step count limit: The maximum allowed number of steps to
+	  reach the goal.
+	</li>
+	<li>
+	  Course size: The course width <var>w</var> and its
+	  length <var>l</var> as two integers.
+	</li>
+	<li>
+	  Vision distance: The vision distance with the race course
+	  played as an integer.
+	</li>
+      </ul>
+      A newline is placed after each of the above items,
+      and two or more integers in one item are separated by a blank space.
+    </p>
+    <p>
+      The figure to the right shows an example initiation input.
+    </p>
+
+    <figure style="float:right; margin: 0px 0px 10px 10px;">
+      <p class="output-example">
+	<code>
+	  0
+	</code>
+      </p>
+    <figcaption>Output at Initiation</figcaption>
+    </figure>
+
+    <h3>Output at Initiation</h3>
+    <p>
+      AI responds with an integer 0 and a newline to inform that its
+      initiation is finished.
+    </p>
+
+    <figure style="float:right; margin: 0px 0px 10px 10px;">
+      <p class="input-example">
+	<code>
+	  3<br>
+	  118628<br>
+	  5 1 0 0<br>
+	  4 6 -1 3<br>
+	  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0<br>
+	  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0<br>
+	  0 0 0 0 0 0 0 0 0 0 0 1 0 1 1 1<br>
+	  2 2 2 2 2 0 2 2 2 0 0 0 0 0 0 0<br>
+	  2 2 2 2 2 2 2 1 1 1 1 0 0 0 0 0<br>
+	  2 2 2 2 0 0 2 2 0 0 0 0 0 0 0 0<br>
+	  2 2 2 2 0 0 0 2 0 0 0 0 0 0 0 0<br>
+	  2 2 2 2 2 2 2 2 0 0 0 0 0 0 0 0<br>
+	  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0<br>
+	  0 0 0 0 1 1 1 1 1 1 1 0 0 0 0 0<br>
+	  0 0 0 0 0 1 1 1 1 1 1 0 0 0 0 0<br>
+	  0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0<br>
+	  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0<br>
+	  0 2 2 2 0 0 0 0 0 0 0 1 1 1 0 0<br>
+	  0 2 2 2 0 0 0 1 1 1 1 1 1 1 0 0<br>
+	  0 0 0 0 0 0 2 2 2 1 1 1 0 0 0 0<br>
+	  -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1<br>
+	  -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1<br>
+	  -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1<br>
+	  -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1<br>
+	</code>
+      </p>
+    <figcaption>Input at a Step</figcaption>
+    </figure>
+
+    <h3>Input at a Step</h3>
+    <p>
+      The input of AI at each step has the following items in this order.
+      <ul>
+	<li>
+	  Step number: The sequential number of the step as an integer.
+	  Steps are numbered starting from 0.
+	</li>
+	<li>
+	  Think time remaining: The remaining think time for this race
+	  as an integer in units of milliseconds.
+	</li>
+	<li>
+	  State of the player: The state of the player the AI controls
+	  at the start of the step as four integers representing the
+	  position (<var>x</var>,&nbsp;<var>y</var>) and the velocity
+	  (<var>v<sub>x</sub>,&nbsp;v<sub>y</sub></var>), in this order.
+	</li>
+	<li>
+	  State of the opponent: The state of the opponent player
+	  at the start of the step as four integers representing the
+	  position (<var>x</var>,&nbsp;<var>y</var>) and the velocity
+	  (<var>v<sub>x</sub>,&nbsp;v<sub>y</sub></var>), in this order.
+	</li>
+	<li>
+	  Information on squares: The kinds of squares are given by
+	  <var>l</var> rows of <var>w</var> integers, in the ascending
+	  order of the <var>y</var> coordinates and, for those with the
+	  same <var>y</var> coordinates, in the ascending order
+	  of <var>x</var> cordinates.
+	  <br>
+	  The integer values mean the following.
+	  <ul>
+	    <li> 0: The square is flat.</li>
+	    <li> 1: The square is obstacled.</li>
+	    <li> 2: The square is muddy.</li>
+	    <li> &minus;1: The square is beyond the vision limit and its
+	      kind is unknown.</li>
+	  </ul>
+	</li>
+      </ul>
+      Except for the information on squares,
+      a newline is placed after each of the above items,
+      and two or more integers in one item are separated by a blank space.
+    </p>
+
+    <figure style="float:right; margin: 0px 0px 10px 10px;">
+      <p class="output-example">
+	<code>
+	  -1 1
+	</code>
+      </p>
+    <figcaption>Output at a step</figcaption>
+    </figure>
+
+    <h3>Output at a Step</h3>
+    <p>
+      The AI is to instruct the acceleration
+      (<var>a<sub>x</sub>,&nbsp;a<sub>y</sub></var>) to be made at the
+      step with two integers,
+      <var>a<sub>x</sub></var> and <var>a<sub>y</sub></var>, separated
+      by a space.  They have to be one of &minus;1, 0, or 1.
+      A newline should be output after them.
+    </p>
+
+    <h3>Information Memory</h3>
+    <p>
+      At each step, after receiving output from AI, the game
+      management system will suspends the execution of the AI
+      temporarily.  The AI will be allowed to continue its execution
+      after sending information on the next step.  Thus, the AI cannot
+      continue its computation between two steps, but its execution
+      context such as variable values are maintained within one whole
+      race.
+    </p>
+    <p>
+      AI programs are initiated within an environment where no file
+      nor network accesses are allowed.  The game management system
+      starts the AI from scratch for each race, and thus information
+      cannot be handed over between different races.
+    </p>
+  </body>
+</html>
