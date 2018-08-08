@@ -32,13 +32,17 @@ body {
     font-weight: bold;
     border-style: outset;
 }
+.player0 {
+    color: red;
+}
+.player1 {
+    color: blue;
+}
 #courseDiv {
     width: 100%;
     margin-top: 2px;
     height: calc(100% - 102px);
     position: absolute;
-    overflow-y: scroll;
-    overflow-x: hidden;
 }
 #visionScreen {
     position: absolute;

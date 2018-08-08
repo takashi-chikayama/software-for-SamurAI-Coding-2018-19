@@ -15,6 +15,7 @@ var courseDiv;
 var unitSize;
 var trajectory;
 var viewOption = "visible";
+var zoomLevel = 0;
 
 const raceLogFileType = 'race log';
 
@@ -51,7 +52,6 @@ function loadFile(evt) {
       });
       currentStep = 0;
       drawCourse();
-      showStep();
       startSound.play();
     };
   reader.readAsText(file);
@@ -59,7 +59,6 @@ function loadFile(evt) {
 
 function bodyResized() {
   drawCourse();
-  showStep();
 }
 
 function leftX(x) { return x*unitSize; }
@@ -90,7 +89,7 @@ function buildLineAcross(y, color) {
   const line = document.createElement("div");
   const thickness = unitSize/10; 
   line.style.position = "absolute";
-  line.style.width = courseDiv.clientWidth + "px";
+  line.style.width = course.width*unitSize + 2 + "px";
   line.style.height = thickness + "px";
   line.style.left = "0px";
   line.style.top = bottomY(y) - thickness/2 + "px";
@@ -99,14 +98,67 @@ function buildLineAcross(y, color) {
   return line;
 }
 
+function zoom(delta) {
+  zoomLevel += delta;
+  drawCourse();
+}
+
+function addKbdControl() {
+  document.body.addEventListener('keydown', function(event) {
+    if (courseDiv != undefined) {
+      var button = 0;
+      switch (event.key) {
+      case "r": case "R":
+	button = 'rewind'; break;
+      case "b": case "B":
+	button = 'back'; break;
+      case "s": case "S":
+	button = 'startStop'; break;
+      case "f": case "F":
+	button = 'forward'; break;
+      case "+":
+	button = 'zoomIn'; break;
+      case "-":
+	button = 'zoomOut'; break;
+      case "ArrowUp":
+	courseDiv.scrollTop -= unitSize; break;
+      case "ArrowDown":
+	courseDiv.scrollTop += unitSize; break;
+      case "ArrowLeft":
+	courseDiv.scrollLeft -= unitSize; break;
+      case "ArrowRight":
+	courseDiv.scrollLeft += unitSize; break;
+      case "v": case "V": {
+	const opt = document.getElementById("visionOption");
+	const index = opt.selectedIndex;
+	const item = opt.options[(index+1)%opt.options.length];
+	opt.value = item.value;
+	changeViewOption(opt);
+	break;
+      }
+      }
+      if (button != 0) {
+	document.getElementById(button).click();
+      }
+    };
+  });
+}
+
 function drawCourse() {
   courseDiv = document.getElementById("courseDiv");
   // Clean up
   while (courseDiv.firstChild) {
     courseDiv.removeChild(courseDiv.firstChild);
   }
+  // Always show vertical slider and show horizontal one on need
+  courseDiv.style.overflowY = "scroll";
+  courseDiv.style.overflowX = zoomLevel > 0 ? "scroll" : "hidden";
   // Decide size
-  unitSize = courseDiv.clientWidth/course.width;
+  unitSize = Math.pow(1.1,zoomLevel) * courseDiv.clientWidth/course.width;
+  // Add margin when needed
+  courseDiv.style.marginLeft =
+    (zoomLevel >= 0 ? 0 :
+     (document.body.clientWidth - course.width * unitSize)/2) + "px";
   // Draw squares
   squares = [];
   for (var y = minY; y <= maxY; y++) {
@@ -176,6 +228,8 @@ function drawCourse() {
   visionScreen = document.createElement("img");
   visionScreen.id = 'visionScreen';
   courseDiv.appendChild(visionScreen);
+  // Show the Current Step
+  showStep();
 }
 
 var playerIcon;
@@ -306,7 +360,7 @@ function showStep() {
     viewOption == "visible" ? topY(step.visibility) :
     viewOption == "ahead3" ? topY(step.visibility+3) :
     viewOption == "follower" ?
-    bototmY(Math.min(step.before[0].y, step.before[1].y)) :
+    bottomY(Math.min(step.before[0].y, step.before[1].y)) :
     0;
   // Set the vision screen position
   visionScreen.style.height = topY(step.visibility) + "px";

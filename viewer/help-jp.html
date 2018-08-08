@@ -5,16 +5,15 @@
     <link rel="stylesheet" type="text/css" href="help.css">
   </head>
   <body>
+    <a href="help-en.html">English</a>
     <h1>
 	SamurAI Jockey 2018 レースビューワ<br>
-	<!-- (<a href="help-en.html">English version</a>) -->
     </h1>
-    <em>English version is not ready yet</em>
 
     <div style="margin-left: 40px; margin-right: 50px;">
       <p>
 	<b>SamurAI Jockey 2018 レースビューワ</b> は
-	SamurAI Jockey 2018 ゲームの結果を可視化するツールです.
+	SamurAI Jockey 2018 ゲームの結果をブラウザ上で可視化するツールです.
     </div>
 
     <h2>表示画面</h2>
@@ -37,7 +36,7 @@
       その下に<b>レースコース表示</b>があります.
     </p>
 
-    <h2>表示の制御</h2>
+    <h2>制御パネル</h2>
     <p>
       表示を制御するボタンやスライダは, 画面最上部の制御パネルにあります.
       以下, 各ボタン・スライダについて説明します.
@@ -47,9 +46,9 @@
       <figcaption>制御パネル</figcaption>
     </figure>
 
-    <h3>Load Log ボタン</h3>
+    <h3>Load ボタン</h3>
     <p>
-      ボタン <span class="buttonName">Load Log</span> をクリックすると,
+      ボタン <span class="buttonName">Load</span> をクリックすると,
       SamurAI Jockey ゲームのログファイルを選ぶダイアログが表示されるので,
       ロードするファイルを選んでください.
       ログファイルは審判システムが出力する1回のレースの進行と結果を表すもので.
@@ -79,8 +78,8 @@
 
     <h3>ステップ再生ボタン</h3>
     <p>
-      ボタン <span class="buttonName">&lt;</span> と
-      <span class="buttonName">&gt;</span> はステップ再生ボタンです.
+      ボタン <span class="buttonName">&gt;</span> と
+      <span class="buttonName">&lt;</span> はステップ再生ボタンです.
       これらをクリックすると, 状況表示を1ステップ前後に更新します.
     </p>
 
@@ -92,10 +91,18 @@
 
     <h3>再生速度の制御</h3>
     <p>
-      制御パネル中のスライダーを使って自動再生の速度を制御できます.
+      制御パネル中のスライダー <img src="screenshots/speedSlider.png" width="120px">
+      を使って自動再生の速度を制御できます.
       スライダーのノブを左に動かすと再生は遅く,
       右に動かすと速くなります.
       現在の再生速度の設定値 (毎分のステップ数) はスライダーの横に表示されます.
+    </p>
+
+    <h3>表示の拡大・縮小</h3>
+    <p>
+      制御パネル中の虫眼鏡ボタン <img src="icons/zoom_in.png" height="20px">
+      <img src="icons/zoom_out.png" height="20px">
+      をクリックするとレースコース表示を拡大・縮小します。
     </p>
 
     <h3>表示部分の設定</h3>
@@ -105,14 +112,13 @@
       自動再生中にコースのどの部分を表示するかを設定します.
       各選択肢の意味は以下のとおりです.
       <dl>
-	<dt>visible range</dt>
+	<dt>visible</dt>
 	<dd>視界範囲の最上部までを表示</dd>
-	<dt>visible&plus;3</dt>
+	<dt>&plus;3</dt>
 	<dd>視界範囲の最上部から3枡上までを表示</dd>
 	<dt>follower</dt>
 	<dd>後続の (y 座標が小さい) プレイヤの位置が表示範囲に入るように表示</dd>
       </dl>
-      全体を表示できない場合はこの設定に関わらず前置を表示します.
     </p>
     <h3>Help ボタン</h3>
     <p>
@@ -120,25 +126,45 @@
       このページを表示します.
     </p>
 
-    <!-- <h3>Keyboard Shortcuts</h3> -->
-    <!-- <p> -->
-    <!--   The following keyboard shortcuts can also be used. -->
-    <!-- </p> -->
-    <!-- <nl> -->
-    <!--   <li><tt>s</tt>: start/stop</li> -->
-    <!--   <li><tt>r</tt>: rewind</li> -->
-    <!--   <li><tt>f</tt>: step forward</li> -->
-    <!--   <li><tt>b</tt>: step backward</li> -->
-    <!--   <li><tt>+</tt>: speed up</li> -->
-    <!--   <li><tt>-</tt>: slow down</li> -->
-    <!-- </nl> -->
+    <h3>キーボードによる制御</h3>
+    <p>
+      下記のキーボード入力による制御もできます.
+      <table class="bordered">
+	<tr>
+	  <th>キー</th><th>機能</th>
+	  <th>キー</th><th>機能</th>
+	  <th>キー</th><th>機能</th>
+	</tr>
+	<tr>
+	  <td><code>s</code></td><td>Start/Stop</td>
+	  <td><code>&plus;</code></td><td>表示拡大</td>
+	  <td><code>&uarr;</code></td><td>上にスクロール</td>
+	</tr>
+	<tr>
+	  <td><code>r</code></td><td>巻き戻し</td>
+	  <td><code>&minus;</code></td><td>表示縮小</td>
+	  <td><code>&darr;</code></td><td>下にスクロール</td>
+	</tr>
+	<tr>
+	  <td><code>f</code></td><td>ステップ前進</td>
+	  <td><code>v</code></td><td>表示部分設定変更</td>
+	  <td><code>&larr;</code></td><td>左にスクロール</td>
+	</tr>
+	<tr>
+	  <td><code>b</code></td><td>ステップ後退</td>
+	  <td></td><td></td>
+	  <td><code>&rarr;</code></td><td>右にスクロール</td>
+	</tr>
+      </table>
+      アルファベットキーについては大文字・小文字とも同じ機能です.
+    </p>
 
     <h2>状況表示パネル</h2>
     <p>
       状況表示パネルには, 現在表示中のステップにおけるゲームの状況のサマリーを表示します.
     </p>
-    <figure>
-      <img src="screenshots/information.png" width="100%"><br>
+    <figure style="width: 300px">
+      <img src="screenshots/information.png"><br>
       <figcaption>状況表示パネル</figcaption>
     </figure>
 
@@ -169,14 +195,14 @@
 	  <td><img src="icons/jump.png" width="60px"></td>
 	</tr>
 	<tr>
-	  <td>通常の枡</td>
+	  <td>平坦</td>
 	  <td>障害物</td>
-	  <td>水濠障害</td>
+	  <td>水濠</td>
 	</tr>
 	<tr>
 	</tr>
       </table>
-      <figcaption>枡の種類とプレイヤ位置</figcaption>
+      <figcaption>枡の種類</figcaption>
     </figure>
 
     <h3>枡の種類</h3>
@@ -209,10 +235,8 @@
       破線で指示された動きを示します.
     </p>
 
-    <h1>
-      <a href="#" onclick="history.go(-1);return true;">
-	レースビューワに戻るにはここをクリックしてください.
-      </a>
-    </h1>
+    <a href="#" onclick="history.go(-1);return true;">
+      レースビューワに戻るにはここをクリックしてください.
+    </a>
   </body>
 </html>

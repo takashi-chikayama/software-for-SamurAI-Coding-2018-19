@@ -1,5 +1,16 @@
 b { color: darkred; }
-table td { text-align: center; vertical-align: middle; }
+em { color: darkred; }
+td, th {
+    text-align: center;
+    vertical-align: middle;
+}
+th {
+    background-color: #EEE;
+}
+.bordered, .bordered td, .bordered th {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
 .alignleft { text-align: left; }
 body { counter-reset: figno; }
 h1 { counter-reset: section; text-align: center; }
