@@ -7,8 +7,8 @@ Software for IPSJ International AI Programming Contest: SamurAI Coding 2018-2019
 ### Documents
 
 The rules of the game SamurAI Jockey 2018 competed in the contest are in the following files.
-* [English](documents/rules-en.html)
-* [Japanese](documents/rules-jp.html)
+* [English](documents/rule-en.html)
+* [Japanese](documents/rule-jp.html)
 
 ### Prerequisites
 
