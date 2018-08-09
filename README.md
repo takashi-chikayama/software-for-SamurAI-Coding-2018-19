@@ -32,15 +32,15 @@ This will make the following software.
 
 ### Testing the Viewer
 
-Visit the [viewer page]( viewer/viewer.html) with your browser.
-Load the log file sample/sample.racelog by clicking the "Load" button.
-The manual of the viewer can be visited by clicking the "Help" button.
+Visit the viewer page [viewer/viewer.html](viewer/viewer.html) with a web browser.
+View the log of a sample race [samples/sample.racelog](samples/racelog) by clicking the "Load" button in the page.
+The manual for the viewer can be visited by clicking the "Help" button.
 
 ### Testing the Game Management System and the Sample Player
 
 Issue the following in the top-level directory.
 ```
-$ official/official sample/sample.crs player/greedy Mary player/greedy John >/tmp/test.racelog
+$ official/official samples/sample.crs player/greedy Mary player/greedy John >/tmp/test.racelog
 ```
 This will run a sample race and its log will be output to /tmp/test.racelog.
 You can view the race log visiting this output from the viewer.
@@ -48,10 +48,5 @@ You can view the race log visiting this output from the viewer.
 ## Authors
 
 * **Takashi Chikayama** - *Initial version*
-
-## License
-
-This project is licensed under XXXXX.
-See the [LICENSE.md](LICENCE.md) file for details.
 
 
