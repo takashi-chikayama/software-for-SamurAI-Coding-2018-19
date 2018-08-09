@@ -19,9 +19,9 @@ The rules of the game SamurAI Jockey 2018 competed in the contest are in the fol
 ### Installing
 
 Issue the following in the top-level directory.
-...
+```
 $ make
-...
+```
 This will make the following software.
 * official/official
    Game management system
@@ -39,9 +39,9 @@ The manual of the viewer can be visited by clicking the "Help" button.
 ### Testing the Game Management System and the Sample Player
 
 Issue the following in the top-level directory.
-...
+```
 $ official/official sample/sample.crs player/greedy Mary player/greedy John >/tmp/test.racelog
-...
+```
 This will run a sample race and its log will be output to /tmp/test.racelog.
 You can view the race log visiting this output from the viewer.
 
