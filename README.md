@@ -32,7 +32,7 @@ This will make the following software.
 
 ### Testing the Viewer
 
-View the file viewer/viewer.html with your browser.
+Visit the [viewer page]( viewer/viewer.html) with your browser.
 Load the log file sample/sample.racelog by clicking the "Load" button.
 The manual of the viewer can be visited by clicking the "Help" button.
 
