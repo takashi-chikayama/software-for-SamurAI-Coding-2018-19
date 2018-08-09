@@ -154,10 +154,10 @@ int main(int argc, char *[]) {
   while (!cin.eof()) {
     RaceInfo info;
     cin >> info;
-    cerr << "step: " << info.stepNumber << endl
-	 << "my state: (" << info.me.position << "+" << info.me.velocity << endl
-	 << "op state: (" << info.opponent.position << "+"
-	 << info.opponent.velocity << endl;
+    DEBUG(cerr << "step: " << info.stepNumber << endl
+	  << "my state: (" << info.me.position << "+" << info.me.velocity << endl
+	  << "op state: (" << info.opponent.position << "+"
+	  << info.opponent.velocity << endl;)
     IntVec accel = plan(info, course);
     cout << accel.x << ' ' << accel.y << endl;
     cout.flush();
