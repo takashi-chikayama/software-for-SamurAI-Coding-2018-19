@@ -19,11 +19,11 @@ typedef IntVec Acceleration;
 
 class Logger {
 private:
-  std::thread thread;
-  std::future<void> future;
+  thread thrd;
+  future<void> ftr;
 public:
-  std::shared_ptr<std::mutex> mutex;
-  Logger(std::unique_ptr<std::istream> input, std::shared_ptr<std::ostream> output, int MAX_SIZE);
+  shared_ptr<mutex> mtx;
+  Logger(unique_ptr<istream> input, shared_ptr<ostream> output, int MAX_SIZE);
   ~Logger();
 };
 
@@ -58,10 +58,10 @@ struct Player {
   PlayerState state;
   Option option;
 
-  std::unique_ptr<boost::process::child> child;
-  std::unique_ptr<boost::process::opstream> toAI;
-  std::unique_ptr<boost::process::ipstream> fromAI;
-  std::unique_ptr<Logger> stderrLogger;
+  unique_ptr<boost::process::child> child;
+  unique_ptr<boost::process::opstream> toAI;
+  unique_ptr<boost::process::ipstream> fromAI;
+  unique_ptr<Logger> stderrLogger;
   // Player state during a race
 
   Player() {};

@@ -12,10 +12,6 @@
 #define SPEEDLIMIT 1000
 #endif
 
-#define DEBUG(code) if (debugsw) { code; }
-
-bool debugsw = false;
-
 const int searchDepth = SEARCHDEPTH;
 const int speedLimitSquared = SPEEDLIMIT*SPEEDLIMIT;
 
@@ -75,11 +71,9 @@ Acceleration plan(RaceInfo &info, const RaceCourse &course) {
   reached[initial] = &initialCand;
   Candidate *best = &initialCand;
   candidates.push(&initialCand);
-  DEBUG(cerr << "Initial: " << initialCand << endl;)
   do {
     Candidate *c = candidates.top();
     candidates.pop();
-    DEBUG(cerr << "Popped: " << *c << endl;)
     for (int cay = 1; cay != -2; cay--) { // Try going forward first
       for (int cax = -1; cax != 2; cax++) {
 	Acceleration accel(cax, cay);
@@ -105,7 +99,6 @@ Acceleration plan(RaceInfo &info, const RaceCourse &course) {
 	      PlayerState nextState(pos, velo);
 	      Candidate *nextCand =
 		new Candidate(c->step+1, nextState, c, Acceleration(cax, cay));
-	      DEBUG(cerr << "Next: " << *nextCand << endl;)
 	      if (c->step < searchDepth &&
 		  (reached.count(nextState) == 0 ||
 		   reached[nextState]->step > c->step+1)) {
@@ -114,7 +107,6 @@ Acceleration plan(RaceInfo &info, const RaceCourse &course) {
 	      }
 	      if (*nextCand > *best) {
 		best = nextCand;
-		DEBUG(cerr << "New best: " << *best << endl;)
 	      }
 	    }
 	  }
@@ -133,10 +125,8 @@ Acceleration plan(RaceInfo &info, const RaceCourse &course) {
     return Acceleration(ax, ay);
   }
   Candidate *c = best;
-  DEBUG(cerr << endl << "The best: " << *c << endl;)
   while (c->from != &initialCand) {
     c = c->from;
-    DEBUG(cerr << "From: " << *c << endl;)
   }
   return c->how;
 }
@@ -146,18 +136,13 @@ ostream &operator<<(ostream &out, const IntVec &v) {
   return out;
 }
 
-int main(int argc, char *[]) {
-  if (argc == 2) debugsw = true;
+int main(int, char *[]) {
   cin >> course;
   cout << "0" << endl;
   cout.flush();
   while (!cin.eof()) {
     RaceInfo info;
     cin >> info;
-    DEBUG(cerr << "step: " << info.stepNumber << endl
-	  << "my state: (" << info.me.position << "+" << info.me.velocity << endl
-	  << "op state: (" << info.opponent.position << "+"
-	  << info.opponent.velocity << endl;)
     IntVec accel = plan(info, course);
     cout << accel.x << ' ' << accel.y << endl;
     cout.flush();

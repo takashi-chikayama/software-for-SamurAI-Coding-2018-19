@@ -24,7 +24,7 @@ function loadFile(evt) {
   var file = evt.target.files[0];
   var reader = new FileReader();
   reader.onload =
-    function(ev) {
+    ev => {
       var newLog = JSON.parse(ev.target.result);
       if (newLog.filetype != raceLogFileType) {
 	alert('The file does not contain SamurAI Jockey race log data');
@@ -44,7 +44,7 @@ function loadFile(evt) {
       minY = 0;
       maxY = course.length-1;
       // Determine the y-coordinate range
-      stepLogs.forEach(function (sl) {
+      stepLogs.forEach(sl => {
 	var y0 = sl.after[0] ? sl.after[0].y : 0;
 	var y1 = sl.after[1] ? sl.after[1].y : 0;
 	minY = Math.min(minY, y0, y1);
@@ -58,7 +58,7 @@ function loadFile(evt) {
 }
 
 function bodyResized() {
-  drawCourse();
+  if (course) drawCourse();
 }
 
 function leftX(x) { return x*unitSize; }
@@ -69,6 +69,8 @@ function centerX(x) { return (x+0.5)*unitSize; }
 function centerY(y) { return (maxY-y+0.5)*unitSize; }
 
 const squareIcons = ["lawn.png", "obstacle.png", "jump.png"];
+const logos = ["IPSJ-logo.jpg", "samurailogo.png", "seizoroi.png"];
+var courseHash;
 
 function buildSquare(x, y) {
   var sqr = document.createElement("img");
@@ -92,7 +94,7 @@ function buildLineAcross(y, color) {
   line.style.width = course.width*unitSize + 2 + "px";
   line.style.height = thickness + "px";
   line.style.left = "0px";
-  line.style.top = bottomY(y) - thickness/2 + "px";
+  line.style.top = bottomY(y) - thickness/2 - 0.5 * unitSize + "px";
   line.style.background = color;
   line.style.zIndex = 1;
   return line;
@@ -144,6 +146,53 @@ function addKbdControl() {
   });
 }
 
+const logoWidth = 3;
+
+function drawLogos() {
+  // Find logo positions
+  var logoCand = [];
+  for (var y = 0; y != course.length; y++) {
+    var x = 0;
+    while (x < course.width - logoWidth + 1) {
+      // Find consecutive obstacle squares
+      if (course.squares[y*course.width + x] == 1) {
+	var dx = 1;
+	while (x + dx != course.width &&
+	       course.squares[y*course.width + x + dx] == 1) {
+	  dx++;
+	}
+	const n = Math.floor((dx-1)/logoWidth); // number of logos that fit
+	if (n != 0) {
+	  const sep = (dx - n * logoWidth)/(n+1);
+	  for (var i = 0; i != n; i++) {
+	    logoCand.push({ x: x + i * logoWidth + (i+1) * sep, y: y });
+	  }
+	}
+	x += dx;
+      } else {
+	x++;
+      }
+    }
+  }
+  console.log(logoCand);
+  // Place logo
+  var whichLogo = 0;
+  logoCand.forEach(pos => {
+    const chosenLogo = logos[whichLogo];
+    whichLogo = (whichLogo + 1) % logos.length;
+    const logo = document.createElement("img");
+    logo.src = "logos/" + chosenLogo;
+    logo.style.width = logoWidth*unitSize + "px";
+    logo.style.height = 0.8*unitSize + "px";
+    logo.style.border = "none";
+    logo.style.position = "absolute";
+    logo.style.top = topY(pos.y) + 0.1 * unitSize + "px";
+    logo.style.left = leftX(pos.x) + "px";
+    logo.style.background = "white";
+    courseDiv.appendChild(logo);
+  });
+}
+
 function drawCourse() {
   courseDiv = document.getElementById("courseDiv");
   // Clean up
@@ -161,12 +210,21 @@ function drawCourse() {
      (document.body.clientWidth - course.width * unitSize)/2) + "px";
   // Draw squares
   squares = [];
+  courseHash = 0;
   for (var y = minY; y <= maxY; y++) {
     squares[y] = [];
     for (var x = 0; x != course.width; x++) {
       courseDiv.appendChild(buildSquare(x, y));
+      courseHash = 0x3121*courseHash + course.squares[y*course.width + x];
+      if (x + 2 < course.width &&
+	  course.squares[y*course.width + x] == 1 &&
+	  course.squares[y*course.width + x + 1] == 1 &&
+	  course.squares[y*course.width + x + 2] == 1) {
+      }
     }
   }
+  // Logos
+  drawLogos();
   // Start and goal lines
   courseDiv.appendChild(buildLineAcross(course.length, "green"));
   courseDiv.appendChild(buildLineAcross(0, "red"));
@@ -191,7 +249,7 @@ function drawCourse() {
   }
   // Prepare trajectories
   trajectory = [];
-  stepLogs.forEach(function (sl) {
+  stepLogs.forEach(sl => {
     traj = [];
     for (var p = 0; p != 2; p++) {
       if (sl.before[p] != null) {
@@ -346,12 +404,12 @@ function showStep() {
   }
   // Show/unshow trajectory
   for (var s = 0; s <= currentStep; s++) {
-    trajectory[s].forEach(function (t) {
+    trajectory[s].forEach(t => {
       t.style.display = "block";
     });
   }
   for (var s = currentStep+1; s != numSteps; s++) {
-    trajectory[s].forEach(function (t) {
+    trajectory[s].forEach(t => {
       t.style.display = "none";
     });
   }
