@@ -99,7 +99,8 @@ Acceleration plan(RaceInfo &info, const RaceCourse &course) {
 	      PlayerState nextState(pos, velo);
 	      Candidate *nextCand =
 		new Candidate(c->step+1, nextState, c, Acceleration(cax, cay));
-	      if (c->step < searchDepth &&
+	      if (!nextCand->goaled &&
+		  c->step < searchDepth &&
 		  (reached.count(nextState) == 0 ||
 		   reached[nextState]->step > c->step+1)) {
 		candidates.push(nextCand);
