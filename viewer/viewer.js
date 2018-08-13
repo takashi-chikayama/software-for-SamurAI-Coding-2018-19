@@ -14,7 +14,7 @@ var maxY;
 var courseDiv;
 var unitSize;
 var trajectory;
-var viewOption = "visible";
+var viewOption = "ahead";
 var zoomLevel = 0;
 
 const raceLogFileType = 'race log';
@@ -174,7 +174,6 @@ function drawLogos() {
       }
     }
   }
-  console.log(logoCand);
   // Place logo
   var whichLogo = 0;
   logoCand.forEach(pos => {
@@ -210,12 +209,10 @@ function drawCourse() {
      (document.body.clientWidth - course.width * unitSize)/2) + "px";
   // Draw squares
   squares = [];
-  courseHash = 0;
   for (var y = minY; y <= maxY; y++) {
     squares[y] = [];
     for (var x = 0; x != course.width; x++) {
       courseDiv.appendChild(buildSquare(x, y));
-      courseHash = 0x3121*courseHash + course.squares[y*course.width + x];
       if (x + 2 < course.width &&
 	  course.squares[y*course.width + x] == 1 &&
 	  course.squares[y*course.width + x + 1] == 1 &&
@@ -242,11 +239,7 @@ function drawCourse() {
     courseDiv.appendChild(rect);
   }
   // Prepare player icons
-  playerIcons = [];
-  for (var p = 0; p != 2; p++) {
-    playerIcons[p] = buildPlayerIcon(p);
-    courseDiv.appendChild(playerIcons[p]);
-  }
+  buildPlayerIcons();
   // Prepare trajectories
   trajectory = [];
   stepLogs.forEach(sl => {
@@ -290,30 +283,39 @@ function drawCourse() {
   showStep();
 }
 
-var playerIcon;
+var playerIcons;
 const playerIconSource = ["player0.png", "player1.png"];
+const shadedPlayerIconSource = ["shadedPlayer0.png", "shadedPlayer1.png"];
 const playerIconRatio = 0.6;
 const playerIconMargin = (1-playerIconRatio)/2;
 const moveLineColors = ["#F88", "#88F"];
 const moveTargetColors = ["#F44", "#44F"];
 
-function buildPlayerIcon(which) {
-  const icon = document.createElement("img");
-  icon.src = "icons/" + playerIconSource[which];
-  icon.style.width = playerIconRatio * unitSize + "px";
-  icon.style.height = playerIconRatio * unitSize + "px";
-  icon.style.border = "none";
-  icon.style.position = "absolute";
-  return icon;
+function buildPlayerIcons() {
+  playerIcons = [];
+  const size = playerIconRatio * unitSize + "px";
+  for (var p = 0; p != 2; p++) {
+    const icon = document.createElement("img");
+    icon.style.width = icon.style.height = size;
+    icon.style.border = "none";
+    icon.style.position = "absolute";
+    courseDiv.appendChild(icon);
+    playerIcons[p] = icon;
+  }
 }
 
-function placePlayerIcon(x, y, which, dx, dy) {
+function placePlayerIcon(x, y, which, dx, dy, progress, result) {
   const icon = playerIcons[which];
-  icon.style.top = topY(y) + playerIconMargin*unitSize + "px";
-  icon.style.left = leftX(x) + playerIconMargin*unitSize + "px";
+  icon.style.top = topY(y+progress*dy) + playerIconMargin*unitSize + "px";
+  icon.style.left = leftX(x+progress*dx) + playerIconMargin*unitSize + "px";
+  icon.src = "icons/" +
+    (result == "normal" || result == "finished" ?
+     playerIconSource : shadedPlayerIconSource)[which];
   icon.style.zIndex = 2;
   icon.style.transform =
-    "rotate(" + (Math.atan2(dx, dy)*180/Math.PI) + "deg)";
+    result == "normal" || result == "finished" ?
+    "rotate(" + (Math.atan2(dx, dy)*180/Math.PI) + "deg)" :
+    "rotate(" + progress*360 + "deg)";
   icon.style.display = "block";
 }
 
@@ -369,15 +371,18 @@ function showStep() {
     return;
   }
   const step = stepLogs[currentStep];
+  var followerY = course.length;
   for (var p = 0; p != 2; p++) {
     // Positions before and after the move
     const b = step.before[p];
     const a = step.after[p];
     if (b != null) {
       // Player Icon
-      placePlayerIcon(b.x, b.y, p, a.x-b.x, a.y-b.y);
+      placePlayerIcon(b.x, b.y, p, a.x-b.x, a.y-b.y, 0,
+		      step.result[p].category);
       document.getElementById("position"+p).innerHTML =
 	"@(" + b.x + "," + b.y + ")";
+      followerY = Math.min(followerY,b.y);
     } else {
       hidePlayerIcon(p);
       document.getElementById("position"+p).innerHTML =
@@ -414,15 +419,22 @@ function showStep() {
     });
   }
   // Set scroll so that visible squares can be seen
-  courseDiv.scrollTop =
-    viewOption == "visible" ? topY(step.visibility) :
-    viewOption == "ahead3" ? topY(step.visibility+3) :
-    viewOption == "follower" ?
-    bottomY(Math.min(step.before[0].y, step.before[1].y)) :
-    0;
+  setScrollTop(step.visibility,
+	       stepLogs[Math.min(numSteps-1, currentStep+1)].visibility,
+	       bottomY(followerY));
+
   // Set the vision screen position
   visionScreen.style.height = topY(step.visibility) + "px";
   visionScreen.style.display = "block";
+}
+
+function setScrollTop(vis, ahead, bottom) {
+  courseDiv.scrollTop =
+    viewOption == "ahead" ? topY(ahead) :
+    viewOption == "visible" ? topY(vis) :
+    viewOption == "+3" ? topY(vis+3) :
+    viewOption == "follower" ? bottom - courseDiv.clientHeight :
+    0;
 }
 
 function changeViewOption(opt) {
@@ -431,8 +443,46 @@ function changeViewOption(opt) {
 }
 
 function stepForward() {
-  stopPlay();
-  forward();
+  if (raceLog) {
+    stopPlay();
+    forward();
+  }
+}
+
+var currentSubstep;
+function forwardSubstep() {
+  if (currentSubstep == numSubsteps) {
+    forward();
+    if (currentStep == numSteps) stopPlay();
+    currentSubstep = 0;
+  } else {
+    currentSubstep += 1;
+    const step = stepLogs[currentStep];
+    const progress = currentSubstep/numSubsteps;
+    var followerY = course.length;;
+    for (var p = 0; p != 2; p++) {
+      const a = step.after[p];
+      if (a != null) {
+	const b = step.before[p];
+	const dx = a.x - b.x;
+	const dy = a.y - b.y;
+	placePlayerIcon(b.x, b.y, p, dx, dy, progress, step.result[p].category);
+	followerY = Math.min(followerY, b.y);
+      }
+    }
+    var substepVis = step.visibility;
+    if (currentStep < numSteps-1) {
+      substepVis +=
+	progress * (stepLogs[currentStep+1].visibility-step.visibility);
+    }
+    const nextVis = stepLogs[Math.min(numSteps-1, currentStep+1)].visibility;
+    const nextNextVis = stepLogs[Math.min(numSteps-1, currentStep+2)].visibility;
+    setScrollTop(substepVis,
+		 nextVis + progress * (nextNextVis - nextVis),
+		 bottomY(followerY));
+    // Set the vision screen position
+    visionScreen.style.height = topY(substepVis) + "px";
+  }
 }
 
 function forward() {
@@ -445,7 +495,7 @@ function forward() {
 }
 
 function stepBackward() {
-  if (currentStep != 0) {
+  if (raceLog && currentStep != 0) {
     currentStep -= 1;
     showStep();
   }
@@ -453,25 +503,33 @@ function stepBackward() {
 
 var timerPlay = -1;
 const initialStepsPerMin = 120;
+const speedStride = 8;
 var stepsPerMin = initialStepsPerMin;
+const framesPerSec = 30;
+var numSubsteps;
 
 function startStop(evt) {
-  if (timerPlay === -1) {
-    startPlay();
-  } else {
-    stopPlay();
+  if (raceLog) {
+    if (timerPlay === -1) {
+      startPlay();
+    } else {
+      stopPlay();
+    }
   }
 }
 
 function startPlay() {
+  if (currentStep == numSteps) return;
   document.getElementById('startStop').innerHTML = "Stop";
-  timerPlay = setInterval(forward, 60*1000/stepsPerMin);
   if (currentStep == 0) {
     horseSteps.currentTime = 0;
     bgm.currentTime = 0;
   }
   horseSteps.play();
   bgm.play();
+  currentSubstep = 1;
+  numSubsteps = Math.max(1, Math.floor(60*framesPerSec/stepsPerMin));
+  timerPlay = setInterval(forwardSubstep, 60*1000/stepsPerMin/numSubsteps);
 }
 
 function stopPlay() {
@@ -479,23 +537,34 @@ function stopPlay() {
   timerPlay = -1;
   horseSteps.pause();
   bgm.pause();
+  showStep();
   document.getElementById('startStop').innerHTML = "Start";
 }
 
 function rewind() {
-  currentStep = 0;
-  showStep();
+  if (raceLog) {
+    currentStep = 0;
+    stopPlay();
+    showStep();
+  }
 }
 
-function setPlaybackSpeed(s) {
-  document.getElementById("stepsPerMin").innerHTML = s;
-  stepsPerMin = s;
+function setPlaybackSpeed(v) {
+  stepsPerMin =
+    speedStride*
+    Math.round(Math.pow(4,v/100)*initialStepsPerMin/speedStride);
+  document.getElementById("stepsPerMin").innerHTML = stepsPerMin;
   horseSteps.playbackRate = Math.sqrt(stepsPerMin/initialStepsPerMin);
   bgm.playbackRate = Math.sqrt(stepsPerMin/initialStepsPerMin);
   if (timerPlay != -1) {
     stopPlay();
     startPlay();
   }
+}
+
+function setDefaultSpeed() {
+  document.getElementById("speedSlider").value = 0;
+  setPlaybackSpeed(0);
 }
 
 const soundLocation = "sound/";

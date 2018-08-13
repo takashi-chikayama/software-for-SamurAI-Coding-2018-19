@@ -25,8 +25,8 @@
       <input type="range" onchange="setPlaybackSpeed(this.value)"
 	     id="speedSlider"
 	     title="Change Play Speed"
-	     step="8" min="24" max="480" value="120">
-      <span class="textInButtons">
+	     step="1" min="-100" max="100" value="0">
+      <span class="textInButtons" onclick="setDefaultSpeed()">
 	<span id="stepsPerMin">120</span>
 	/min
       </span>
@@ -41,8 +41,9 @@
       </span>
       <select id="visionOption" name="option" onchange="changeViewOption(this)"
 	      title="View Range Option">
+	<option value="ahead">ahead</option>
         <option value="visible">visible</option>
-        <option value="ahead3">+3</option>
+        <option value="+3">+3</option>
         <option value="follower">follower</option>
       </select>
       <button id="help" onclick="location.href='help-jp.html'"
