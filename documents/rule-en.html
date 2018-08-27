@@ -5,9 +5,10 @@
     <link rel="stylesheet" type="text/css" href="samurai-docs.css">
   </head>
   <body>
+    <a href="rule-jp.html">日本語版</a>
     <h1>SamurAI Jockey 2018 Game Rules (draft)</h1>
     <div class='centered'>
-      August XXth, 2018<br>
+      September 1st, 2018<br>
       IPSJ Programming Contest Committee
     </div>
     <div class="abstract">
@@ -22,8 +23,8 @@
     <p>
       A <em>race</em> is a game with two players, starting from the
       specified positions, repeating acceleration or deceleration in
-      each step, competing to pass the goal line faster throught the
-      race course with obstacles and muddy water jumps.  Actions of the
+      each step, competing to pass the goal line faster through the
+      race course with obstacles and puddles.  Actions of the
       players are decided, step by step, by AI programs.
     </p>
     <p>
@@ -48,10 +49,10 @@
     <h2>Race Course</h2>
     <p>
       A race course consists of a number of squares arranged as a
-      two-dimensional grid, some of which are obstacled or muddy.
+      two-dimensional grid, some of which are obstacles or puddles.
       Race courses in different matches may have different width
-      and/or length, and different numbers and positions of obstacled
-      and muddy squares.  In what follows, <var>w</var> represents the
+      and/or length, and different numbers and positions of obstacles
+      and puddles.  In what follows, <var>w</var> represents the
       width of a course and <var>l</var> represents the length of the
       course.  Each of the squares have coordinates of
       (<var>x,&nbsp;y</var>).
@@ -60,7 +61,7 @@
       At the start and the end of each race step, the players are on
       one of the squares.  Players can never go out of the race course
       width, i.e.,
-      0&nbsp;&lt;&nbsp;<var>x</var>&nbsp;&ge;&nbsp;<var>w</var> holds
+      0&nbsp;&le;&nbsp;<var>x</var>&nbsp;&lt;&nbsp;<var>w</var> holds
       for the <var>x</var> coordinate of the square a player is on.
       When a player finishes when it reaches a square
       with <var>y</var>&nbsp;&ge;&nbsp;<var>l</var>.
@@ -73,15 +74,15 @@
       <var>x</var> coordinates.
     </p>
     <p>
-      Some of the squares on the course are <em>obstacled</em>
-      or <em>muddy</em>.  The obstacled and muddy squares are fixed
+      Some of the squares on the course are <em>obstacles</em>
+      or <em>puddles</em>.  The obstacles and puddles are fixed
       and never change their positions during a race.  Their
       coordinates satisfy
       0&nbsp;&le;&nbsp;<var>x</var>&lt;&nbsp;<var>w</var> and
       0&nbsp;&le;&nbsp;<var>y</var>&lt;&nbsp;<var>l</var>, i.e., they
       are not located outside of the course width, not behind the
       start positions, nor beyond the goal.
-      Squares not being obstacled nor muddy are <em>flat</em>.
+      Squares not being an obstacle nor a puddle are <em>flat</em>.
     </p>
     <p>
       The figure to the right shows an example of a race course.
@@ -96,8 +97,8 @@
 	</tr>
 	<tr>
 	  <td>Flat</td>
-	  <td>Obstacled</td>
-	  <td>Muddy</td>
+	  <td>Obstacle</td>
+	  <td>Puddle</td>
 	  <td colspan="2">Player Positions</td>
 	</tr>
 	<tr>
@@ -116,8 +117,9 @@
 
     <h2>Limited Vision</h2>
     <p>
-      AI are informed which squares are flat, obstacled or muddy, however,
-      the squares for which such information provided are those with their
+      AI are informed which squares are flat, an obstacle or a puddle,
+      however, the squares for which such information provided are
+      those with their
       <var>y</var> coordinates smaller than the value of <em>vision
       limit</em>.  The vision limit is the maximum of the <var>y</var>
       coordinates of squares either of the players reached before the
@@ -194,8 +196,8 @@
       for when the player is stopped by going off course or by
       collision with the other player (see below for details), the
       player will be on the planned position at the end of the step.
-      When the planned position is muddy, the velocity of the player
-      at the end fo the step will be (0,&nbsp;0); when not, it will be
+      When the planned position is a puddle, the velocity of the player
+      at the end of the step will be (0,&nbsp;0); when not, it will be
       (<var>v<sub>x</sub>+a<sub>x</sub>,&nbsp;v<sub>y</sub>+a<sub>y</sub></var>).
     </p>
 
@@ -215,24 +217,24 @@
     </p>
     <p>
       The player is said to have <em>gone off course</em> if any of
-      the folowing cases.
+      the following cases.
       <ul>
 	<li>
 	  The planned position is out of the width of the course, i.e.,
 	  when the <var>x</var> coordinate of the planned position
-	  does not satifsy
+	  does not satisfy
 	  0&nbsp;&le;&nbsp;<var>x</var>&nbsp;&lt&nbsp;<var>w</var>.
 	</li>
 	<li>
-	  The move line crosses or touches an obstacled square.
+	  The move line crosses or touches an obstacle square.
 	</li>
       </ul>
       In the figure to the right, red movements,
       a, b, c, and d go off course, while
       blue movements e and f are not.
-      The movements a and b crosses an obstacled square
-      and the movement c touches a corner of an obstacled square.
-      The movement d goes otu of the width of the course.
+      The movements a and b crosses an obstacle square
+      and the movement c touches a corner of an obstacle square.
+      The movement d goes out of the width of the course.
     </p>
     <p>
       When a player goes off course, its position at end of the step
@@ -246,7 +248,7 @@
       cross or touch each other, a <em>collision</em> is taken place.
     </p>
     <p>
-      On a collsion, the player with <em>priority</em> can move to its
+      On a collision, the player with <em>priority</em> can move to its
       planned position, while the other will be stopped on its
       original position with the velocity of (0,&nbsp;0).
     </p>
@@ -282,7 +284,7 @@
 	  <td>Case 4</td>
 	</tr>
       </table>
-      <figcaption>Collisions and Priroity</figcaption>
+      <figcaption>Collisions and Priority</figcaption>
     </figure>
 
     <p>
@@ -317,7 +319,7 @@
 	</li>
 	<li>
 	  In Case 3, the move line of the player with smaller
-	  <var>y</var> coordinate value goes throught the square of
+	  <var>y</var> coordinate value goes through the square of
 	  the opponent's position at the start of the step, but two
 	  move lines do not cross nor touch each other, and thus
 	  no collision took place.
@@ -332,11 +334,11 @@
       </ul>
     </p>
 
-    <h3>Muddy Square</h3>
+    <h3>Puddles</h3>
     <p>
-      When a player is positioned in a muddy square at the end of the
+      When a player is positioned in a puddle square at the end of the
       step, its velocity will become (0,&nbsp;0).  Thus, starting from
-      a muddy square with coordinates
+      a puddle with coordinates
       (<var>x</var>,&nbsp;<var>y</var>), the planned position will be
       restricted to the range
       (<var>x</var>&plusmn;1,&nbsp;<var>y</var>&plusmn;1).
@@ -344,18 +346,18 @@
 
     <h3>Goal and Goal Time</h3>
     <p>
-      When a player is positioned at a square with coodinates
+      When a player is positioned at a square with coordinates
       (<var>x</var>,&nbsp;<var>y</var>) at the start of a
       step <var>s</var>, and reached the position
       (<var>x'</var>,&nbsp;<var>y'</var>) at the end of the step where
       <var>y'</var>&nbsp;&ge;&nbsp;<var>l</var>, the player is said to
-      have goaled.
+      have finished.
       The <em>goal time</em> of the player is given by
       <var>s</var>&nbsp;+&nbsp;(<var>l</var>&nbsp;&minus;&nbsp;<var>y</var>)&nbsp;/&nbsp;(<var>y'</var>&nbsp;&minus;&nbsp;<var>y</var>).
     </p>
     <p>
-      If the opponent player has not goaled nor disqualified at this
-      time, the race will be continued with the goaled playered
+      If the opponent player has not finished nor disqualified at this
+      time, the race will be continued with the finished player
       removed from the course.
     </p>
 
@@ -370,8 +372,8 @@
       <li> The player's response did not accord with the specification.</li>
     </ul>
     <p>
-      If the opponent player has not goaled nor disqualified at this
-      time, the race will be continued with the goaled playered
+      If the opponent player has not finished nor disqualified at this
+      time, the race will be continued with the disqualified player
       removed from the course.  The goal time of the disqualified
       player is twice the step count limit.
     </p>
@@ -383,8 +385,8 @@
     <h2>Interface with AI</h2>
     <p>
       At initiation of a race, AI reads in the information of the
-      race as a whole, and, when it has completed its intiation,
-      responds an acknowledgement.  At each step, AI reads in the
+      race as a whole, and, when it has completed its initiation,
+      responds an acknowledgment.  At each step, AI reads in the
       information of the race state and responds to it with
       acceleration instruction.  Such exchanges are not made in steps
       after the player controlled by the AI goals or is disqualified.
@@ -392,13 +394,13 @@
     <p>
       The input to AI are sequences of a number of decimal integers,
       separated with a blank space or a newline.  For negative numbers, a
-      minus sign is prepositioned.  A newline is placed after the last
-      integer in the input on intiation and on each of the steps.
+      minus sign is put in front.  A newline is placed after the last
+      integer in the input on initiation and on each of the steps.
     </p>
     <p>
       The response of AI is also a sequence of decimal integers
       separated with a blank space or a newline, possibly preceded by
-      a minus sign to indicte negative numbers.
+      a minus sign to indicate negative numbers.
       <em>A newline should be output at the end of the response.</em>
     </p>
 
@@ -518,13 +520,13 @@
 	  <var>l</var> rows of <var>w</var> integers, in the ascending
 	  order of the <var>y</var> coordinates and, for those with the
 	  same <var>y</var> coordinates, in the ascending order
-	  of <var>x</var> cordinates.
+	  of <var>x</var> coordinates.
 	  <br>
 	  The integer values mean the following.
 	  <ul>
 	    <li> 0: The square is flat.</li>
-	    <li> 1: The square is obstacled.</li>
-	    <li> 2: The square is muddy.</li>
+	    <li> 1: The square is an obstacle.</li>
+	    <li> 2: The square is a puddle.</li>
 	    <li> &minus;1: The square is beyond the vision limit and its
 	      kind is unknown.</li>
 	  </ul>
