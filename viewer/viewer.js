@@ -61,17 +61,61 @@ function bodyResized() {
   if (course) drawCourse();
 }
 
-function leftX(x) { return x*unitSize; }
+const sideBarWidth = 0.7;
+function leftX(x) { return (x+sideBarWidth)*unitSize; }
 function topY(y) { return (maxY-y)*unitSize; }
 function bottomY(y) { return (maxY-y+1)*unitSize; }
 
-function centerX(x) { return (x+0.5)*unitSize; }
-function centerY(y) { return (maxY-y+0.5)*unitSize; }
+const squareIcons = ["lawn.png", "obstacle.png", "puddle.png"];
 
-const squareIcons = ["lawn.png", "obstacle.png", "jump.png"];
-const logos = ["IPSJ-logo.jpg", "samurailogo.png", "seizoroi.png"];
-var courseHash;
+// Sponsor logos
+const logoSizes = { platinum: 3.5, gold: 2.8, silver: 2.1, bronze: 1.5 };
+const logos = [
+  { category: "gold", source: "e-Seikatsu.png" },
+  { category: "silver", source: "seizoroi.png" },
+  { category: "gold", source: "samurailogo.png" },
+  { category: "silver", source: "fukuoka-active.png" },
+  { category: "silver", source: "IPSJ-logo.jpg" },
+  { category: "bronze", source: "fukuoka-u.jpg" },
+];
 
+function logoImageLoaded() {
+  const ratio = this.naturalHeight/this.naturalWidth;
+  const maxWidth = logoSizes[this.logo.category];
+  const logo = this.logo;
+  if (ratio * maxWidth > maxLogoHeight) {
+    logo.width = maxLogoHeight/ratio;
+    logo.height = maxLogoHeight;
+  } else {
+    logo.width = maxWidth;
+    logo.height = ratio * maxWidth;
+    const area = logo.width * logo.height;
+    const maxArea = maxAreaRatio * maxWidth;
+    if (area > maxArea) {
+      const shrink = Math.sqrt(maxArea/area);
+      logo.width *= shrink;
+      logo.height *= shrink;
+    }
+  }
+  obtainLogoAspects(this.number + 1);
+}
+
+var logoAspectsObtained = false;
+
+function obtainLogoAspects(n) {
+  if (n < logos.length) {
+    const img = document.createElement('img');
+    img.logo = logos[n];
+    img.number = n;
+    img.onload = logoImageLoaded;
+    img.src = "logos/" + logos[n].source;
+  } else {
+    logoAspectsObtained = true;
+    drawCourseBody();
+  }
+}
+
+// Course squares 
 function buildSquare(x, y) {
   var sqr = document.createElement("img");
   squares[y].push(sqr);
@@ -84,6 +128,7 @@ function buildSquare(x, y) {
   sqr.style.position = "absolute";
   sqr.style.top = topY(y) + "px";
   sqr.style.left = leftX(x) + "px";
+  sqr.title = "(" + x + "," + y + ")";
   return sqr;
 }
 
@@ -91,7 +136,7 @@ function buildLineAcross(y, color) {
   const line = document.createElement("div");
   const thickness = unitSize/10; 
   line.style.position = "absolute";
-  line.style.width = course.width*unitSize + 2 + "px";
+  line.style.width = (course.width + 2*sideBarWidth)*unitSize + 2 + "px";
   line.style.height = thickness + "px";
   line.style.left = "0px";
   line.style.top = bottomY(y) - thickness/2 - 0.5 * unitSize + "px";
@@ -146,53 +191,115 @@ function addKbdControl() {
   });
 }
 
-const logoWidth = 3;
+const maxLogoHeight = 0.8;
+const maxAreaRatio = 0.7;
+const minSep = 0.1;
+const sideBarSep = 0.2;
 
 function drawLogos() {
-  // Find logo positions
-  var logoCand = [];
+  if (logos == []) return;	// With no logos to display
+  var remaining = logos.slice();
   for (var y = 0; y != course.length; y++) {
     var x = 0;
-    while (x < course.width - logoWidth + 1) {
+    while (x < course.width-1) {
       // Find consecutive obstacle squares
       if (course.squares[y*course.width + x] == 1) {
-	var dx = 1;
-	while (x + dx != course.width &&
-	       course.squares[y*course.width + x + dx] == 1) {
-	  dx++;
+	var w = 1;
+	while (x + w != course.width &&
+	       course.squares[y*course.width + x + w] == 1) {
+	  w++;
 	}
-	const n = Math.floor((dx-1)/logoWidth); // number of logos that fit
-	if (n != 0) {
-	  const sep = (dx - n * logoWidth)/(n+1);
-	  for (var i = 0; i != n; i++) {
-	    logoCand.push({ x: x + i * logoWidth + (i+1) * sep, y: y });
-	  }
+	var toDisplay = [];
+	var remainingWidth = w;
+	while (true) {
+	  const width = remaining[0].width;
+	  if (remainingWidth < width + 2*minSep) break;
+	  remainingWidth -= width;
+	  toDisplay.push(remaining.shift());
+	  if (remaining.length == 0) remaining = logos.slice();
 	}
-	x += dx;
+	if (toDisplay.length != 0) {
+	  const sep = remainingWidth/(toDisplay.length+1);
+	  var pos = x + sep;
+	  toDisplay.forEach(chosen => {
+	    const logo = document.createElement("img");
+	    logo.style.border = "none";
+	    logo.style.background = "white";
+	    logo.style.position = "absolute";
+	    logo.xpos = pos;
+	    logo.ypos = y;
+	    logo.width = chosen.width * unitSize;
+	    logo.height = chosen.height * unitSize;
+	    logo.style.top =
+	      topY(y) + (unitSize-logo.height)/2 + "px";
+	    logo.style.left = leftX(pos) + "px";
+	    logo.src = "logos/" + chosen.source;
+	    courseDiv.appendChild(logo);
+	    pos += chosen.width + sep;
+	  });
+	}
+	x += w;
       } else {
-	x++;
+	x += 1;
       }
     }
   }
-  // Place logo
-  var whichLogo = 0;
-  logoCand.forEach(pos => {
-    const chosenLogo = logos[whichLogo];
-    whichLogo = (whichLogo + 1) % logos.length;
-    const logo = document.createElement("img");
-    logo.src = "logos/" + chosenLogo;
-    logo.style.width = logoWidth*unitSize + "px";
-    logo.style.height = 0.8*unitSize + "px";
-    logo.style.border = "none";
-    logo.style.position = "absolute";
-    logo.style.top = topY(pos.y) + 0.1 * unitSize + "px";
-    logo.style.left = leftX(pos.x) + "px";
-    logo.style.background = "white";
-    courseDiv.appendChild(logo);
+}
+
+function drawSideBars() {
+  if (logos == []) return;
+  const sideBar = document.createElement("div");
+  sideBar.style.position = "absolute";
+  sideBar.style.width = (course.length+1) * unitSize + "px";
+  sideBar.style.height = sideBarWidth * unitSize + "px";
+  sideBar.style.top = "0px";
+  sideBar.style.left = "0px";
+  sideBar.style.background = sideBarBackground;
+  var remainingWidth = course.length - sideBarSep;
+  var remaining = logos.slice();
+  var toDisplay = [];
+  while (true) {
+    var w = sideBarWidth * remaining[0].width;
+    if (remainingWidth < w + sideBarSep) break;
+    toDisplay.push(remaining.shift());
+    if (remaining.length == 0) remaining = logos.slice();
+    remainingWidth -= w + sideBarSep;
+  }
+  const sep = sideBarSep + remainingWidth/(toDisplay.length+1);
+  var pos = 0.5 + sep;
+  toDisplay.forEach(chosen => {
+    const img = document.createElement("img");
+    img.style.background = "white";
+    img.style.position = "absolute"
+    img.width = sideBarWidth * chosen.width * unitSize;
+    img.style.bottom = 0.1 * unitSize + "px";
+    img.style.left = pos * unitSize + "px";
+    img.src = "logos/" + chosen.source;
+    sideBar.appendChild(img);
+    pos += sideBarWidth * chosen.width + sep;
   });
+  const theOther = sideBar.cloneNode(true);
+  sideBar.style.transformOrigin = "0% 0%";
+  sideBar.style.transform =
+    "rotate(-90deg) " +
+    "translate(-" + bottomY(0) + "px,0px)";
+  courseDiv.appendChild(sideBar);
+  theOther.style.transformOrigin = "0% 0%";
+  theOther.style.transform =
+    "translate(" + leftX(course.width+sideBarWidth) +
+    "px, 0px) rotate(90deg)";
+  courseDiv.appendChild(theOther);
 }
 
 function drawCourse() {
+  if (logoAspectsObtained) {
+    drawCourseBody();
+  } else {
+    obtainLogoAspects(0);
+  }
+}
+
+function drawCourseBody() {
   courseDiv = document.getElementById("courseDiv");
   // Clean up
   while (courseDiv.firstChild) {
@@ -202,7 +309,8 @@ function drawCourse() {
   courseDiv.style.overflowY = "scroll";
   courseDiv.style.overflowX = zoomLevel > 0 ? "scroll" : "hidden";
   // Decide size
-  unitSize = Math.pow(1.1,zoomLevel) * courseDiv.clientWidth/course.width;
+  unitSize = Math.pow(1.1,zoomLevel) *
+    courseDiv.clientWidth/(course.width + 2*sideBarWidth);
   // Add margin when needed
   courseDiv.style.marginLeft =
     (zoomLevel >= 0 ? 0 :
@@ -222,20 +330,23 @@ function drawCourse() {
   }
   // Logos
   drawLogos();
+  // Sidebars
+  drawSideBars();
   // Start and goal lines
   courseDiv.appendChild(buildLineAcross(course.length, "green"));
   courseDiv.appendChild(buildLineAcross(0, "red"));
   // Start positions
   for (var p = 0; p != 2; p++) {
     const rect = document.createElement("div");
-    rect.style.width = 0.2 * unitSize + "px";
-    rect.style.height = 0.2 * unitSize + "px";
+    rect.style.width = rect.style.height = startRectSize * unitSize + "px";
     rect.style.left =
-      leftX(stepLogs[0].before[p].x) + 0.4*unitSize + "px";
+      leftX(stepLogs[0].before[p].x) + (1-startRectSize)/2*unitSize + "px";
     rect.style.top =
-      topY(stepLogs[0].before[p].y) + 0.4*unitSize + "px";
+      topY(stepLogs[0].before[p].y) + (1-startRectSize)/2*unitSize + "px";
     rect.style.background = moveTargetColors[p];
     rect.style.position = "absolute";
+    rect.style.zIndex = 2;
+    rect.onclick = rewind;
     courseDiv.appendChild(rect);
   }
   // Prepare player icons
@@ -260,14 +371,14 @@ function drawCourse() {
 	switch (result.category) {
 	case "finished":
 	case "normal":
-	  traj.push(buildMoveLine(bx, by, p, ax, ay, true));
+	  traj.push(buildMoveLine(bx, by, p, ax, ay, true, sl.step));
 	  break;
 	case "goneoff":
 	case "obstacled":
 	case "collided": {
 	  const fx = bx + before.vx + sl.accel[p].x;
 	  const fy = by + before.vy + sl.accel[p].y;
-	  traj.push(buildMoveLine(bx, by, p, fx, fy, false));
+	  traj.push(buildMoveLine(bx, by, p, fx, fy, false, sl.step));
 	  break;
 	}
 	}
@@ -290,6 +401,7 @@ const playerIconRatio = 0.6;
 const playerIconMargin = (1-playerIconRatio)/2;
 const moveLineColors = ["#F88", "#88F"];
 const moveTargetColors = ["#F44", "#44F"];
+const sideBarBackground = "#040";
 
 function buildPlayerIcons() {
   playerIcons = [];
@@ -311,11 +423,12 @@ function placePlayerIcon(x, y, which, dx, dy, progress, result) {
   icon.src = "icons/" +
     (result == "normal" || result == "finished" ?
      playerIconSource : shadedPlayerIconSource)[which];
-  icon.style.zIndex = 2;
+  icon.style.zIndex = 3;
   icon.style.transform =
     result == "normal" || result == "finished" ?
     "rotate(" + (Math.atan2(dx, dy)*180/Math.PI) + "deg)" :
     "rotate(" + progress*360 + "deg)";
+  icon.title = "player " + which;
   icon.style.display = "block";
 }
 
@@ -323,36 +436,59 @@ function hidePlayerIcon(which) {
   playerIcons[which].style.display = "none";
 }
 
-function buildMoveLine(x, y, which, ax, ay, ok) {
+const moveLineWidth = 0.05;
+const endPointRadius = 0.15;
+const startRectSize = 0.25;
+
+function buildMoveLine(x, y, which, ax, ay, ok, s) {
+  // Div for both
+  const both = document.createElement("div");
+  courseDiv.appendChild(both);
   // Move line
-  const move = document.createElement("canvas");
-  const top = Math.max(y, ay);
-  const left = Math.min(x, ax);
-  move.width = (Math.abs(ax-x)+1) * unitSize;
-  move.height = (Math.abs(ay-y)+1) * unitSize;
-  move.style.position = "absolute";
-  move.style.border = "none";
-  move.style.top = topY(top) + "px";
-  move.style.left = leftX(left) + "px";
-  move.style.zIndex = 1;
-  const ctx = move.getContext("2d");
-  ctx.scale(unitSize, -unitSize);
-  ctx.translate(-left+0.5, -top-0.5)
-  ctx.strokeStyle = moveLineColors[which];
-  ctx.fillStyle = moveTargetColors[which];
-  if (!ok) ctx.setLineDash([0.1, 0.1]);
-  ctx.lineWidth = 0.05;
-  ctx.beginPath();
-  ctx.moveTo(x, y);
-  ctx.lineTo(ax, ay);
-  ctx.stroke();
-  if (ok) {
-    ctx.beginPath();
-    ctx.arc(ax, ay, 0.1, 0, 2*Math.PI);
-    ctx.fill();
+  if (x != ax || y != ay) {
+    const line = document.createElement("canvas");
+    const top = Math.max(y, ay);
+    const left = Math.min(x, ax);
+    line.width = (Math.abs(ax-x)+1) * unitSize;
+    line.height = (Math.abs(ay-y)+1) * unitSize;
+    line.style.position = "absolute";
+    line.style.border = "none";
+    line.style.top = topY(top) + "px";
+    line.style.left = leftX(left) + "px";
+    line.style.pointerEvents = "none";
+    line.style.zIndex = 1;
+    const mctx = line.getContext("2d");
+    mctx.scale(unitSize, -unitSize);
+    mctx.translate(-left+0.5, -top-0.5)
+    mctx.strokeStyle = moveLineColors[which];
+    if (!ok) mctx.setLineDash([0.1, 0.1]);
+    mctx.lineWidth = moveLineWidth;
+    mctx.beginPath();
+    mctx.moveTo(x, y);
+    mctx.lineTo(ax, ay);
+    mctx.stroke();
+    both.appendChild(line);
   }
-  courseDiv.appendChild(move);
-  return move;
+  // End point
+  const endPoint = document.createElement("canvas");
+  endPoint.width = endPoint.height = unitSize;
+  endPoint.style.position = "absolute";
+  endPoint.style.top = topY(ay) + "px";
+  endPoint.style.left = leftX(ax) + "px";
+  // endPoint.style.pointerEvents = "none";
+  endPoint.style.zIndex = 2;
+  endPoint.onclick = () => {
+    currentStep = s;
+    showStep();
+  };
+  const ectx = endPoint.getContext("2d");
+  ectx.scale(unitSize, unitSize);
+  ectx.beginPath();
+  ectx.arc(0.5, 0.5, endPointRadius, 0, 2*Math.PI);
+  ectx.fillStyle = moveTargetColors[which];
+  ectx.fill();
+  both.appendChild(endPoint);
+  return both;
 }
 
 function showStep() {
@@ -402,8 +538,8 @@ function showStep() {
       if (step.after[p] &&
 	  course.squares[step.after[p].y*course.width +
 			 step.after[p].x] == 2) {
-	// Jumped into water
-	playAudio("water");
+	// Stepped into a puddle
+	playAudio("puddle");
       }
     }
   }
