@@ -74,9 +74,7 @@ const logos = [
   { category: "gold", source: "e-Seikatsu.png" },
   { category: "silver", source: "seizoroi.png" },
   { category: "gold", source: "samurailogo.png" },
-  { category: "silver", source: "fukuoka-active.png" },
   { category: "silver", source: "IPSJ-logo.jpg" },
-  { category: "bronze", source: "fukuoka-u.jpg" },
 ];
 
 function logoImageLoaded() {

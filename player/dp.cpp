@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <queue>
 #include <map>
+#include <list>
 #include <cctype>
 #include "raceInfo.hpp"
 
@@ -48,7 +49,7 @@ struct Candidate {
   }
   bool operator<(const Candidate &c) const {
     return
-      c.goaled ? !goaled || goalTime >= c.goalTime :
+      c.goaled ? !goaled || goalTime > c.goalTime :
       state == c.state ? step > c.step :
       state < c.state;
   }
@@ -64,7 +65,10 @@ ostream &operator<<(ostream &out, Candidate c) {
 }
 
 Acceleration plan(RaceInfo &info, const RaceCourse &course) {
-  priority_queue <Candidate *> candidates;
+  auto cmp = [](Candidate *a, Candidate *b) { return *a<*b; };
+  priority_queue <Candidate *, vector<Candidate*>, decltype(cmp)>
+    candidates(cmp);
+  list <Candidate *> allocated;
   map <PlayerState, Candidate *> reached;
   PlayerState initial(info.me.position, info.me.velocity);
   Candidate initialCand(0, initial, nullptr, Acceleration(0, 0));
@@ -98,7 +102,9 @@ Acceleration plan(RaceInfo &info, const RaceCourse &course) {
 	      }
 	      PlayerState nextState(pos, velo);
 	      Candidate *nextCand =
-		new Candidate(c->step+1, nextState, c, Acceleration(cax, cay));
+		new Candidate(c->step+1, nextState, c,
+			      Acceleration(cax, cay));
+	      allocated.push_front(nextCand);
 	      if (!nextCand->goaled &&
 		  c->step < searchDepth &&
 		  (reached.count(nextState) == 0 ||
@@ -115,6 +121,7 @@ Acceleration plan(RaceInfo &info, const RaceCourse &course) {
       }
     }
   } while (!candidates.empty());
+  Acceleration bestAccel;
   if (best == &initialCand) {
     // No good move found
     // Slowing down for a while might be a good strategy
@@ -123,13 +130,16 @@ Acceleration plan(RaceInfo &info, const RaceCourse &course) {
     else if (info.me.velocity.x > 0) ax -= 1;
     if (info.me.velocity.y < 0) ay += 1;
     else if (info.me.velocity.y > 0) ay -= 1;
-    return Acceleration(ax, ay);
+    bestAccel = Acceleration(ax, ay);
+  } else {
+    Candidate *c = best;
+    while (c->from != &initialCand) {
+      c = c->from;
+    }
+    bestAccel = c->how;
   }
-  Candidate *c = best;
-  while (c->from != &initialCand) {
-    c = c->from;
-  }
-  return c->how;
+  for (Candidate *a: allocated) delete a;
+  return bestAccel;
 }
 
 ostream &operator<<(ostream &out, const IntVec &v) {
