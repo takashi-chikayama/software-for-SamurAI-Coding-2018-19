@@ -35,39 +35,60 @@ void addSquares(int x, int y0, int y1, list <Position> &squares) {
 
 list <Position> Movement::touchedSquares() const {
   list <Position> r;
-  if (to.x == from.x) {
-    addSquares(from.x, from.y, to.y, r);
-  } else {
-    // Here, we will use the coordinate system where
-    // the bottom left corner of the square (x, y) has the coordinates (x, y).
-    // Thus, a point (x', y') is in or on a edge of the square (x, y) when
-    // x <= x' <= x+1 and y <= y' <= y+1
-    double a = (double)(to.y-from.y)/(to.x-from.x);
-    int sgnx = from.x < to.x ? 1 : -1;
-    // The movement line is on the line given as:
-    //    y = a * (x - from.x - 0.5) + from.y + 0.5
-    // For the first square
-    double y1 = a * sgnx/2.0 + from.y + 0.5;
-    int iy1 = to.y > from.y ? floor(y1) : ceil(y1) -1;
-    addSquares(from.x, from.y, iy1, r);
-    // For squares inbetween
-    for (int x = from.x + sgnx; x != to.x; x += sgnx) {
-      double y0 = a * (x - from.x - sgnx/2.0) + from.y + 0.5;
-      double y1 = a * (x - from.x + sgnx/2.0) + from.y + 0.5;
-      int iy0, iy1;
-      if (to.y > from.y) {
-	iy0 = ceil(y0) - 1;
-	iy1 = floor(y1);
-      } else {
-	iy0 = floor(y0);
-	iy1 = ceil(y1) - 1;
-      }
-      addSquares(x, iy0, iy1, r);
+  int dx = to.x - from.x;
+  int dy = to.y - from.y;
+  int sgnx = dx > 0 ? 1 : -1;
+  int sgny = dy > 0 ? 1 : -1;
+  if (dx == 0) {
+    for (int k = 0, y = from.y; k <= dy; k++, y += sgny) {
+      r.emplace_back(from.x, y);
     }
-    // For the last square
-    double y0 = a * (to.x - from.x - sgnx/2.0) + from.y + 0.5;
-    int iy0 = to.y > from.y ? ceil(y0) - 1 : floor(y0);
-    addSquares(to.x, iy0, to.y, r);
+  } else if (dy == 0) {
+    for (int k = 0, x = from.x; k <= dx; k++, x += sgnx) {
+      r.emplace_back(x, from.y);
+    }
+  } else {
+    // Let us transform the move line so that it goes up and to the right,
+    // that is, with dx > 0 and dy > 0.
+    // The results will be adjusted afterwards.
+    if (sgnx < 0) dx = -dx;
+    if (sgny < 0) dy = -dy;
+    // We will use the coordinate system in which the start point
+    // of the move is at (0,0) and x-coodinate values are doubled,
+    // so that x is integral on square borders.
+    // The point (X,Y) in the original coordinate system becomes
+    //   x = 2*(X-from.x)
+    //   y = Y-from.y
+    // Such a movement line satisfies the following.
+    //   y = dy/dx/2 * x, or 2*dx*y = dy*x
+    //
+    // The start square and those directly above it
+    for (int y = 0; dx*(2*y-1) <= dy; y++) {
+      r.emplace_back(0, y);
+    }
+    // The remaining squares except for those below (dx, dy)
+    for (int x = 1; x < 2*dx-1; x += 2) {
+      for (int y = (dy*x+dx)/(2*dx) -
+	     (dy*x+dx == (dy*x+dx)/(2*dx)*(2*dx) ? 1 : 0);
+	   dx*(2*y-1) <= dy*(x+2);
+	   y++) {
+	r.emplace_back((x+1)/2, y);
+      }
+    }
+    // For the final squares with x = dx
+    for (int y = (dy*(2*dx-1)+dx)/(2*dx) -
+	   ((dy*(2*dx-1)+dx) == (dy*(2*dx-1)+dx)/(2*dx)*(2*dx) ? 1 : 0);
+	 y <= dy;
+	 y++) {
+      r.emplace_back(dx, y);
+    }
+    // Adjustment
+    for (auto &p: r) {
+      if (sgnx < 0) p.x = -p.x;
+      if (sgny < 0) p.y = -p.y;
+      p.x += from.x;
+      p.y += from.y;
+    }
   }
   return r;
 }
