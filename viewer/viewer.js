@@ -553,12 +553,12 @@ function showStep() {
     });
   }
   // Set scroll so that visible squares can be seen
-  setScrollTop(step.visibility,
-	       stepLogs[Math.min(numSteps-1, currentStep+1)].visibility,
+  setScrollTop(step.visibility - 1,
+	       stepLogs[Math.min(numSteps-1, currentStep+1)].visibility - 1,
 	       bottomY(followerY));
 
   // Set the vision screen position
-  visionScreen.style.height = topY(step.visibility) + "px";
+  visionScreen.style.height = topY(step.visibility - 1) + "px";
   visionScreen.style.display = "block";
 }
 
@@ -604,13 +604,13 @@ function forwardSubstep() {
 	followerY = Math.min(followerY, b.y);
       }
     }
-    var substepVis = step.visibility;
+    var substepVis = step.visibility - 1;
     if (currentStep < numSteps-1) {
       substepVis +=
 	progress * (stepLogs[currentStep+1].visibility-step.visibility);
     }
-    const nextVis = stepLogs[Math.min(numSteps-1, currentStep+1)].visibility;
-    const nextNextVis = stepLogs[Math.min(numSteps-1, currentStep+2)].visibility;
+    const nextVis = stepLogs[Math.min(numSteps-1, currentStep+1)].visibility - 1;
+    const nextNextVis = stepLogs[Math.min(numSteps-1, currentStep+2)].visibility - 1;
     setScrollTop(substepVis,
 		 nextVis + progress * (nextNextVis - nextVis),
 		 bottomY(followerY));
