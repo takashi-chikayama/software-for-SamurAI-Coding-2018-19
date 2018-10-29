@@ -39,12 +39,14 @@ list <Position> Movement::touchedSquares() const {
   int dy = to.y - from.y;
   int sgnx = dx > 0 ? 1 : -1;
   int sgny = dy > 0 ? 1 : -1;
+  int adx = abs(dx);
+  int ady = abs(dy);
   if (dx == 0) {
-    for (int k = 0, y = from.y; k <= dy; k++, y += sgny) {
+    for (int k = 0, y = from.y; k <= ady; k++, y += sgny) {
       r.emplace_back(from.x, y);
     }
   } else if (dy == 0) {
-    for (int k = 0, x = from.x; k <= dx; k++, x += sgnx) {
+    for (int k = 0, x = from.x; k <= adx; k++, x += sgnx) {
       r.emplace_back(x, from.y);
     }
   } else {
