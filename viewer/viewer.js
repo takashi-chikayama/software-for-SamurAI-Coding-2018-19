@@ -69,32 +69,26 @@ function bottomY(y) { return (maxY-y+1)*unitSize; }
 const squareIcons = ["lawn.png", "obstacle.png", "puddle.png"];
 
 // Sponsor logos
-const logoSizes = { platinum: 3.5, gold: 2.8, silver: 2.1, bronze: 1.5 };
+const logoSizes = { platinum: 2.8, gold: 2.3, silver: 1.6, bronze: 1.0 };
 const logos = [
   { category: "gold", source: "e-Seikatsu.png" },
-  { category: "silver", source: "seizoroi.png" },
+  { category: "gold", source: "hitachi.png" },
   { category: "gold", source: "samurailogo.png" },
+  { category: "silver", source: "seizoroi.png" },
   { category: "silver", source: "IPSJ-logo.jpg" },
+  { category: "bronze", source: "jprs.png" }
 ];
 
 function logoImageLoaded() {
-  const ratio = this.naturalHeight/this.naturalWidth;
-  const maxWidth = logoSizes[this.logo.category];
   const logo = this.logo;
-  if (ratio * maxWidth > maxLogoHeight) {
-    logo.width = maxLogoHeight/ratio;
-    logo.height = maxLogoHeight;
-  } else {
-    logo.width = maxWidth;
-    logo.height = ratio * maxWidth;
-    const area = logo.width * logo.height;
-    const maxArea = maxAreaRatio * maxWidth;
-    if (area > maxArea) {
-      const shrink = Math.sqrt(maxArea/area);
-      logo.width *= shrink;
-      logo.height *= shrink;
-    }
+  const naturalArea = this.naturalHeight * this.naturalWidth;
+  const logoArea = logoSizes[this.logo.category];
+  var shrink = Math.sqrt(logoArea/naturalArea);
+  if (shrink * this.naturalHeight > 1) {
+    shrink = 1/this.naturalHeight;
   }
+  logo.width = shrink * this.naturalWidth;
+  logo.height = shrink * this.naturalHeight;
   obtainLogoAspects(this.number + 1);
 }
 
