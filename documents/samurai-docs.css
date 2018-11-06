@@ -1,6 +1,8 @@
 b { color: darkred; }
 em { color: darkred; }
 table td { text-align: center; vertical-align: middle; }
+.borderedTable { border-collapse: collapse; }
+.borderedTable tr, td, th { border: 1px solid black; padding: 3px 5px 3px 5px; }
 .alignleft { text-align: left; }
 body { counter-reset: figno; }
 h1 { counter-reset: section; text-align: center; }
