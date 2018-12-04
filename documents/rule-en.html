@@ -104,14 +104,14 @@
 	</tr>
       </table>
     </p>
-
     <p>
-      There are no dead ends in the course, i.e., for all of the
-      squares reachable from the start positions of two players, it is
-      possible to reach a square with larger <var>y</var> coordinate
-      without backtracking (without going to squares with
-      smaller <var>y</var> coordinate value), with velocity small
-      enough.
+      The course is laid out so that large backtracking is not needed;
+      for all of the squares reachable from the start positions of two
+      players, it is possible to reach a square with
+      larger <var>y</var> coordinate value without decreasing
+      the <var>y</var> coordinate value by the <em>vision
+      distance</em> or more, and not going out off course, when moves
+      are made with velocity small enough.
     </p>
 
     <h2>Limited Vision</h2>
