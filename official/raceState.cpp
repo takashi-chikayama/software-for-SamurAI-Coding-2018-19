@@ -60,6 +60,7 @@ bool RaceLog::playOneStep
 			 course->squares[s.y][s.x] == 1;
 		     })) {
 	    playResult[p] = GONEOFF;
+	    move[p] = Movement(ps.position, ps.position);
 	  }
 	}
 	break;
@@ -71,7 +72,7 @@ bool RaceLog::playOneStep
       playResult[p] = NOPLAY;
     }
   }
-  if (playResult[0] == NORMAL && playResult[1] == NORMAL) {
+  if (playResult[0] == NORMAL || playResult[1] == NORMAL) {
     // Check collision
     bool collision = move[0].intersects(move[1]);
     if (collision) {
