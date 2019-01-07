@@ -77,7 +77,8 @@ const logos = [
   { category: "silver", source: "seizoroi.png" },
   { category: "silver", source: "IPSJ-logo.jpg" },
   { category: "bronze", source: "jprs.png" },
-  { category: "bronze", source: "fujitsu.jpg" }
+  { category: "bronze", source: "fujitsu.jpg" },
+  { category: "bronze", source: "KCT.png" }
 ];
 
 function logoImageLoaded() {
