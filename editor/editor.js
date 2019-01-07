@@ -29,6 +29,7 @@ function wholeView() {
 
 var courseLength;
 var courseWidth;
+var visionLimit = 10;
 var minSize = 5;
 var maxSize = 100;
 
@@ -45,6 +46,7 @@ function widerCourse() {
     course.appendChild(sqr);
   }
   courseWidth += 1;
+  verifyBacktrack();
   standardView();
 }
 
@@ -54,6 +56,7 @@ function narrowerCourse() {
     course.removeChild(squares[y].pop());
   }
   courseWidth -= 1;
+  verifyBacktrack();
   standardView();
 }
 
@@ -66,6 +69,7 @@ function longerCourse() {
     course.appendChild(sqr);
   }
   courseLength += 1;
+  verifyBacktrack();
   standardView();
 }
 
@@ -76,6 +80,7 @@ function shorterCourse() {
   }
   squares.pop();
   courseLength -= 1;
+  verifyBacktrack();
   standardView();
 }
 
@@ -89,7 +94,8 @@ function loadFile(evt) {
       if (data.filetype != courseFileType) {
 	alert('The file does not contain a SamurAI Jockey 2018 race course');
       } else {
-	document.getElementById("visionRange").value = data.vision;
+	document.getElementById("visionLimit").value = data.vision;
+	visionLimit = data.vision;
 	document.getElementById("thinkTime").value = data.thinkTime;
 	document.getElementById("stepLimit").value = data.stepLimit;
 	startPos[0] = data.x0;
@@ -106,12 +112,15 @@ function loadFile(evt) {
 	squares[0][data.x0].state = 3;
 	squares[0][data.x1].state = 4;
       }
+      verifyBacktrack();
       standardView();
+      if (violationCount != 0) violationAlert();
     };
   reader.readAsText(file);
 }
 
 function saveFile(evt) {
+  if (violationCount != 0) violationAlert();
   courseData = encodeCourse();
   parent.document.getElementById('saveFileForm').style.display = 'block';
   parent.document.getElementById('saveFileName').focus();
@@ -143,46 +152,32 @@ function writeFile(evt) {
   parent.document.getElementById('writeFileName').focus();
 }
 
+function violationAlert() {
+  alert(violationCount + " square" +
+	(violationCount > 1 ? "s violate" : " violates") +
+	" the backtracking upper limit");
+}
+
 function encodeCourse() {
   var squareKinds = [];
   for (var y = 0; y != courseLength; y++) {
     for (var x = 0; x != courseWidth; x++) {
-      var s = squares[y][x].state;
-      if (s > 2) s = 0;
-      squareKinds.push(s);
+      const sqr = squares[y][x];
+      const s = sqr.state;
+      squareKinds.push(s >= PlayerSquare0 ? NormalSquare : s);
     }
   }
   return {
     "filetype": courseFileType,
     "width": courseWidth,
     "length": courseLength,
-    "vision": parseInt(document.getElementById("visionRange").value),
+    "vision": visionLimit,
     "thinkTime": parseInt(document.getElementById("thinkTime").value),
     "stepLimit": parseInt(document.getElementById("stepLimit").value),
     "x0": startPos[0],
     "x1": startPos[1],
     "squares": squareKinds
   };
-}
-  
-function doWriteFile(evt) {
-  var fileName = parent.document.getElementById("writeFileName").value;
-  parent.document.getElementById('writeFileForm').style.display = 'none';
-  var file = new Blob([JSON.stringify(encodeCourse())], {type: 'application/json'});
-  if (window.navigator.msSaveOrOpenBlob) {// IE10+
-    window.navigator.msSaveOrOpenBlob(file, fileName);
-  } else { // Others
-    var a = parent.document.createElement("a"),
-        url = URL.createObjectURL(file);
-    a.href = url;
-    a.download = fileName;
-    parent.document.body.appendChild(a);
-    a.click();
-    setTimeout(function() {
-      parent.document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    }, 0);
-  }
 }
 
 function editCourse(evt) {
@@ -196,6 +191,12 @@ function editCourse(evt) {
   }
 }
 
+const NormalSquare = 0;
+const ObstacleSquare = 1;
+const JumpSquare = 2;
+const PlayerSquare0 = 3;
+const PlayerSquare1 = 4;
+
 const squareIcons = [
   "../icons/lawn.png",
   "../icons/obst.png",
@@ -204,13 +205,21 @@ const squareIcons = [
   "../icons/withPlayer1.png"
 ];
 
+const violationIcons = [
+  "../icons/deadEnd.png",
+  "../icons/obst.png",
+  "../icons/deadEndJump.png"
+];
+
+
 function positionSquare(sqr) {
   sqr.style.width = unitSize - 2 + "px";
   sqr.style.height = unitSize - 2 + "px";
   sqr.style.top =
     (courseLength-sqr.yy-1)*unitSize + courseMargin + 1 + "px";
   sqr.style.left = sqr.xx*unitSize + courseMargin + 1 + "px";
-  sqr.src = squareIcons[sqr.state];
+  sqr.src =
+    sqr.violation ? violationIcons[sqr.state] : squareIcons[sqr.state];
 }
 
 function buildSquare(x, y) {
@@ -234,12 +243,33 @@ function buildSquare(x, y) {
 var stateChangedTo = null;
 var prevSquare;
 window.onmouseup = function (event) { stateChangedTo = null; }
+window.onkeypress = function (event) {
+  switch (event.key) {
+  case "+":
+    document.getElementById("zoom in").click();
+    break;
+  case "-":
+    document.getElementById("zoom out").click();
+    break;
+  case "n": case "N":
+    document.getElementById("new button").click();
+    break;
+  case "l": case "L":
+    document.getElementById("load button").click();
+    break;
+  case "s": case "S":
+    document.getElementById("save button").click();
+    break;
+  case "h": case "H":
+    document.getElementById("help button").click();
+    break;
+  }
+}
 
 function mouseEnteredSquare(sqr) {
   changeSquareState(sqr);
-  const visionRange = document.getElementById("visionRange").value;
   visionScreen.style.height =
-    (courseLength - sqr.yy - visionRange) * unitSize
+    (courseLength - sqr.yy - visionLimit) * unitSize
     + courseMargin + 1 + "px";
 }
 
@@ -248,10 +278,10 @@ function mouseLeftSquare(sqr) {
 }
 
 function mouseDownOnSquare(sqr) {
-  if (sqr.state < 3) {
+  if (sqr.state <= JumpSquare) {
     stateChangedTo = (sqr.state+1)%3;
     changeSquareState(sqr);
-  } else {
+  } else if (sqr.state <= PlayerSquare1) {
     stateChangedTo = sqr.state;
     prevSquare = sqr;
   }
@@ -265,12 +295,13 @@ function changeSquareState(sqr) {
 	return;
       }
       startPos[stateChangedTo-3] = sqr.xx;
-      prevSquare.state = 0;
-      prevSquare.src = squareIcons[0];
+      prevSquare.state = NormalSquare;;
+      prevSquare.src = squareIcons[NormalSquare];
       prevSquare = sqr;
     }
     sqr.state = stateChangedTo;
-    sqr.src = squareIcons[sqr.state];
+    verifyBacktrack();
+    standardView();
   }
 }
 
@@ -290,15 +321,22 @@ function drawCourse() {
   }
   document.getElementById("courseSize").innerHTML =
     courseWidth + "&times;" + courseLength;
-  const visionRange = document.getElementById('visionRange');
+  const visionRange = document.getElementById('visionLimit');
   visionRange.max = courseLength;
-  visionRange.value = Math.min(visionRange.value, courseLength-1);
+  visionRange.value = visionLimit;
   visionScreen.style.height = "0px";
   visionScreen.style.width = course.style.width;
   visionScreen.style.display = "block"
 }
 
+function visionLimitChanged() {
+  visionLimit = document.getElementById('visionLimit').value;
+  verifyBacktrack();
+  standardView();
+}
+
 function windowResized() {
+  verifyBacktrack();
   standardView();
 }
 
@@ -320,4 +358,76 @@ function newCourse(width, length) {
   visionScreen.id = 'visionScreen';
   course.appendChild(visionScreen);
   standardView();
+}
+
+var violationCount;
+
+function verifyBacktrack() {
+  violationCount = 0;
+  var queue = [];
+  for (var x = 0; x != courseWidth; x++) {
+    for (var y = 0; y != courseLength; y++) {
+      sqr = squares[y][x];
+      sqr.bt = 0;
+      sqr.violation = false;
+      if (sqr.state == PlayerSquare0 || sqr.state == PlayerSquare1) {
+	queue.push({x: x, y: y});
+      }
+    }
+  }
+  function reach(s, dx, dy) {
+    var nx = s.x+dx;
+    var ny = s.y+dy;
+    if (0 <= nx && nx < courseWidth && 0 <= ny && ny < courseLength) {
+      var sqr = squares[ny][nx];
+      if (sqr.state != ObstacleSquare && sqr.bt != Infinity) {
+	sqr.bt = Infinity;
+	queue.push({x: nx, y: ny});
+      }
+    }
+  }
+  while (queue.length != 0) {
+    var s = queue.shift(1);
+    reach(s, -1, 0);
+    reach(s, 1, 0);
+    reach(s, 0, 1);
+    reach(s, 0, -1);
+  }
+  function visit(s, dx, dy) {
+    var nx = s.x+dx;
+    var ny = s.y+dy;
+    if (0 <= nx && nx < courseWidth && 0 <= ny && ny < courseLength) {
+      var sqr = squares[ny][nx];
+      if (sqr.state != ObstacleSquare) {
+	var nbt = Math.max(s.bt + dy, 0);
+	if (sqr.bt > nbt) {
+	  sqr.bt = nbt;
+	  queue.push({x: nx, y: ny, bt: nbt});
+	}
+      }
+    }
+  }
+  for (var x = 0; x != courseWidth; x++) {
+    var sqr = squares[courseLength-1][x];
+    if (sqr.state != ObstacleSquare) {
+      sqr.bt = 0;
+      queue.push({x: x, y: courseLength-1, bt: 0});
+    }
+  }
+  while (queue.length != 0) {
+    var s = queue.shift(1);
+    visit(s, -1, 0);
+    visit(s, 1, 0);
+    visit(s, 0, 1);
+    visit(s, 0, -1);
+  }
+  for (var x = 0; x != courseWidth; x++) {
+    for (var y = 0; y != courseLength; y++) {
+      var sqr = squares[y][x];
+      if (sqr.bt >= visionLimit) {
+	sqr.violation = true;
+	violationCount++;
+      }
+    }
+  }
 }

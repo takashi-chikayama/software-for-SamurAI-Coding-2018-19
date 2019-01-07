@@ -49,26 +49,36 @@
       枡の座標 (この例では &ldquo;(7,0)&rdquo;) が近くに表示されます。
       座標は右手系です。
     </p>
+    <p>
+      後戻り必要量の制約に違反する枡 (いずれかのプレイヤの初期位置から到達可能で、
+      視界の範囲の値以上 y 座標が小さい枡まで戻らないとゴールできない枡) には、
+      赤い×印が表示されます。
+    </p>
+
     <figure>
       <table>
 	<tr>
-	  <td><img src="../icons/lawn.png" width="60px"></td>
-	  <td><img src="../icons/obstacle.png" width="60px"></td>
-	  <td><img src="../icons/jump.png" width="60px"></td>
-	  <td><img src="../icons/withPlayer0.png" width="60px"></td>
-	  <td><img src="../icons/withPlayer1.png" width="60px"></td>
+	  <td><img src="../icons/lawn.png" width="50px"></td>
+	  <td><img src="../icons/obstacle.png" width="50px"></td>
+	  <td><img src="../icons/jump.png" width="50px"></td>
+	  <td><img src="../icons/withPlayer0.png" width="50px"></td>
+	  <td><img src="../icons/withPlayer1.png" width="50px"></td>
+	  <td><img src="../icons/deadEnd.png" width="50px"></td>
+	  <td><img src="../icons/deadEndJump.png" width="50px"></td>
 	</tr>
 	<tr>
-	  <td>障害のない枡</td>
-	  <td>通常障害物</td>
-	  <td>水濠障害</td>
-	  <td colspan="2">プレイヤの初期位置</td>
+	  <td>通常の枡</td>
+	  <td>障害物</td>
+	  <td>水濠</td>
+	  <td colspan="2">プレイヤ初期位置</td>
+	  <td colspan="2">制約違反の枡</td>
 	</tr>
 	<tr>
 	</tr>
       </table>
       <figcaption>枡の種類</figcaption>
     </figure>
+
 
     <h2>枡の編集</h2>
     <h3>マウスクリック</h3>
@@ -233,6 +243,19 @@
       このページを表示します。
     </p>
 
+    <h2>キー入力</h2>
+    <p>
+      下表に示すキー入力は対応するボタンをクリックするのと同じ効果を持ちます。
+      <table>
+	<tr><th>キー入力</th><th>対応するボタン</th></tr>
+	<tr><td><tt>+</tt></td><td>表示拡大</td></tr>
+	<tr><td><tt>-</tt></td><td>表示縮小</td></tr>
+	<tr><td><tt>n, N</tt></td><td>New</td></tr>
+	<tr><td><tt>l, L</tt></td><td>Load</td></tr>
+	<tr><td><tt>s, S</tt></td><td>Save</td></tr>
+	<tr><td><tt>h, H</tt></td><td>Help</td></tr>
+      </table>
+    </p>
     <button onclick="window.history.back();">コースエディタに戻る</button>
   </body>
 </html>
