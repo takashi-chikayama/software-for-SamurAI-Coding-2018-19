@@ -73,6 +73,7 @@ const logoSizes = { platinum: 2.8, gold: 2.3, silver: 1.6, bronze: 1.0 };
 const logos = [
   { category: "gold", source: "e-Seikatsu.jpg" },
   { category: "gold", source: "hitachi.png" },
+  { category: "gold", source: "nomura.png" },
   { category: "gold", source: "samurailogo.png" },
   { category: "silver", source: "seizoroi.png" },
   { category: "silver", source: "IPSJ-logo.jpg" },
