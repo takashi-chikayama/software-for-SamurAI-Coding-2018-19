@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" type="text/css" href="samurai-docs.css">
+  </head>
+  <body>
+    <a href="final-rule-en.html">English Version</a>
+    <h1>SamurAI Coding 2018&ndash;19 決勝ルール (ドラフト)</h1>
+    <div class='centered'>
+      2019年2月13日<br>
+      情報処理学会プログラミングコンテスト委員会
+    </div>
+    <div class="abstract">
+      <p>
+	SamurAI Coding 2018&ndash;19
+	コンテストの決勝の実施方法を定める.
+      </p>
+    </div>
+
+    <div style="float: right; padding: 10px;">
+      <img src="tournament-table-jp.png" width=450/>
+    </div>
+
+    <h2>決勝の構成</h2>
+    <p>
+      決勝は予選を通過した 16 チームによる勝ち抜きトーナメントにより行う.
+      これに加えて, 準決勝で敗退した 2 チームが対戦する三位決定戦も実施する.
+    </p>
+    <p>a
+      トーナメントの各ゲームでは 1 ゲーム (同じコースでスタート位置を交換した2レース) を競う.
+      ゲームが引分だった場合は, 異なるコースを用いて再戦を行う.
+      再戦がまた引分だった場合は, シード順がより上位であったチームが勝ち進むものとする.
+    </p>
+    <p>
+      勝ち抜きトーナメントは右に示す表に従って行う.
+      番号は参加チームのシード順を表す
+    </p>
+
+    <h2>レースコース</h2>
+    <p>
+      決勝に用いるレースコースは, 
+      <a href=https://github.com/takashi-chikayama/software-for-SamurAI-Coding-2018-19/tree/master/course_generator>コースジェネレータ</a>
+      によって生成する.
+      コースジェネレータは, 予選に用いたものと同一のものを用いる (必要となったバグ修正は除く).
+    </p>
+    <p>
+      決勝に用いるレースコースは以下を満たす.
+      <ul>
+	<li>コースの長さは 100 以上 200 以下である.</li>
+	<li>コースの幅は 5 以上 20 以下である.</li>
+	<li>視界は 5 以上である.</li>
+	<li>考慮時間は 200ms に制限ステップ数を乗じ 1000ms を加えたものである.</li>
+      </ul>
+    </p>
+
+    <h2>シード順</h2>
+    <p>
+      シード順は予選順位に定める.
+      複数チームが予選において同順位である場合, そのシード順は抽選により定める.
+    </p>      
+  </body>
+</html>
