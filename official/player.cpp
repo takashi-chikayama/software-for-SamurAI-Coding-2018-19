@@ -150,7 +150,7 @@ Player::Player(string command, string name, const RaceCourse &course, int xpos,
   future_status result = ftr.wait_for(remain);
   chrono::system_clock::time_point end = chrono::system_clock::now();
   auto timeUsed = chrono::duration_cast<chrono::milliseconds>(end - start).count();
-  // state.timeLeft -= timeUsed;
+  state.timeLeft -= timeUsed;
   stderrLogger->mtx->lock();
   if (option.stderrLogStream) {
     *option.stderrLogStream << "[system] spend time: " << timeUsed << ", remain: " << state.timeLeft << endl;
@@ -205,7 +205,7 @@ Player::Player(string command, string name, const RaceCourse &course, int xpos,
       }
     }
     state.state = ALREADY_DISQUALIFIED;
-  } else { 
+  } else {
     if (option.stderrLogStream) {
       *option.stderrLogStream << "[system] Success!: hand shake" << endl;
     }
