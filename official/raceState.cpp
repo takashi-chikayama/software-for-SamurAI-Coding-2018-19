@@ -134,7 +134,7 @@ bool RaceLog::playOneStep
       rs.visibility =
 	max(rs.visibility, ps.position.y + rs.course->vision);
       ps.velocity = nextVelocity[p];
-      ps.timeLeft -= timeUsed[p];
+      // ps.timeLeft -= timeUsed[p];
       stepLog.after[p] = ps;
       stepLog.result[p].category = playResult[p];
       if (playResult[p] == FINISHED) {
