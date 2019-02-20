@@ -51,6 +51,7 @@ bool RaceLog::playOneStep
 	move[p] = Movement(ps.position, nextPosition[p]);
 	if (nextPosition[p].x < 0 || course->width <= nextPosition[p].x) {
 	  playResult[p] = GONEOFF;
+	  move[p] = Movement(ps.position, ps.position);
 	} else {
 	  touched[p] = move[p].touchedSquares();
 	  if (any_of(touched[p].begin(), touched[p].end(),
@@ -134,7 +135,7 @@ bool RaceLog::playOneStep
       rs.visibility =
 	max(rs.visibility, ps.position.y + rs.course->vision);
       ps.velocity = nextVelocity[p];
-      ps.timeLeft -= timeUsed[p];
+      // ps.timeLeft -= timeUsed[p];
       stepLog.after[p] = ps;
       stepLog.result[p].category = playResult[p];
       if (playResult[p] == FINISHED) {

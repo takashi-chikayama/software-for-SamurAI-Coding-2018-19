@@ -77,9 +77,9 @@ int main(int argc, char *argv[]) {
   RaceState raceState(course, player0, name0, player1, name1, options);
 
   for (int p = 0; p != 2; p++) {
-    raceState.players[p].state =
-      PlayerState(RACING, Position(course.startX[p], 0), Velocity(0, 0),
-		  course.thinkTime);
+    // raceState.players[p].state =
+    //   PlayerState(RACING, Position(course.startX[p], 0), Velocity(0, 0),
+		  // course.thinkTime);
     raceState.visibility = course.vision;
   }
   for (int stepNumber = 0;

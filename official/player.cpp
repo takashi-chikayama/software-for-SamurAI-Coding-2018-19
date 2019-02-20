@@ -9,6 +9,11 @@
 #include <cinttypes>
 #include <boost/optional.hpp>
 
+#if defined(__unix__) || defined(__linux__)
+#include <fcntl.h>
+#include <cmath>
+#endif
+
 #include "course.hpp"
 #include "player.hpp"
 
@@ -123,6 +128,26 @@ Player::Player(string command, string name, const RaceCourse &course, int xpos,
   error_code error_code_child;
   unique_ptr<boost::process::ipstream> stderrFromAI(new boost::process::ipstream);
   toAI = unique_ptr<boost::process::opstream>(new boost::process::opstream);
+#if defined(__unix__) || defined(__linux__)
+	{
+		// get native handle of writing
+		const auto sink = toAI->pipe().native_sink();
+		// calucate possible size
+		int psize = 0;
+		const int newline_size = sizeof(toAI->widen('\n'));
+		psize += (int) (std::ceil(std::log10(course.thinkTime)) + 3 + newline_size) * (1 + course.stepLimit);
+		psize += (int) (std::ceil(std::log10(course.stepLimit)) + newline_size) * (1 + course.stepLimit);
+		psize += (int) (std::ceil(std::log10(course.width)) + 1) * (1 + course.stepLimit * 2);
+		psize += (int) (std::ceil(std::log10(course.length)) + newline_size) * (1 + course.stepLimit * 2);
+		psize += (int) (std::ceil(std::log10(course.vision)) + newline_size);
+		psize += (int) (3 * course.width + newline_size) * course.length * course.stepLimit;
+		// set pipe size
+		const auto res = fcntl(sink, F_SETPIPE_SZ, psize);
+		if (res < 0) {
+			std::cerr << __FILE__ << ":" << __LINE__ << " F_SETPIPE_SZ failed... target size : " << psize << std::endl;
+		}
+	}
+#endif
   fromAI = unique_ptr<boost::process::ipstream>(new boost::process::ipstream);
   child = unique_ptr<boost::process::child>(new boost::process::child(
     command,
@@ -150,7 +175,7 @@ Player::Player(string command, string name, const RaceCourse &course, int xpos,
   future_status result = ftr.wait_for(remain);
   chrono::system_clock::time_point end = chrono::system_clock::now();
   auto timeUsed = chrono::duration_cast<chrono::milliseconds>(end - start).count();
-  // state.timeLeft -= timeUsed;
+  state.timeLeft -= timeUsed;
   stderrLogger->mtx->lock();
   if (option.stderrLogStream) {
     *option.stderrLogStream << "[system] spend time: " << timeUsed << ", remain: " << state.timeLeft << endl;
@@ -205,7 +230,7 @@ Player::Player(string command, string name, const RaceCourse &course, int xpos,
       }
     }
     state.state = ALREADY_DISQUALIFIED;
-  } else { 
+  } else {
     if (option.stderrLogStream) {
       *option.stderrLogStream << "[system] Success!: hand shake" << endl;
     }
