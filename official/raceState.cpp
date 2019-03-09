@@ -1,4 +1,6 @@
 #include "raceState.hpp"
+#include <cmath>
+#include <cfloat>
 
 const char* RaceLogFileType =  "race log";
 
@@ -203,6 +205,10 @@ ostream &operator<<(ostream &out, const StepLog &log) {
   return out;
 }
 
+double inftomax (double x) {
+  return (std::isinf(x) ? (x>0? DBL_MAX : -DBL_MAX) : x);
+}
+
 ostream &operator<<(ostream &out, const RaceLog &log) {
   out << "{" << endl
       << "  \"filetype\": \"" << RaceLogFileType << "\"," << endl
@@ -210,7 +216,7 @@ ostream &operator<<(ostream &out, const RaceLog &log) {
       << "  \"names\": [\""
       << log.names[0] << "\", \"" << log.names[1] << "\"]," << endl
       << "  \"finished\": ["
-      << log.goalTime[0] << ", " << log.goalTime[1] << "]," << endl
+      << inftomax(log.goalTime[0]) << ", " << inftomax(log.goalTime[1]) << "]," << endl
       << "  \"log\": [" << endl;
   for (auto sl = log.log.begin(); sl != log.log.end(); sl++) {
     out << *sl;
