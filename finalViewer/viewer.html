@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>SamurAI Jockey 2018 Race Viewer</title>
+    <script src="viewer.js"></script>
+    <link rel="stylesheet" type="text/css" href="viewer.css">
+  </head>
+  <body onresize="bodyResized()" onkeypress="keyPressed(event)">
+    <div style="font-size:40px; font-weight:bold;">
+      <center id="matchTitle" style="white-space: nowrap; overflow: hidden;"></center>
+    </div>
+    <div class="buttons" id="buttons">
+      <button id="load" onclick="document.getElementById('fileInput').click();"
+	      title="Load Log File">
+	Load</button>
+      <input type="file" style="display:none" id="fileInput"
+	     onchange="loadFile(event)">
+      <button id="rewind" onclick="rewind(event)" title="Rewind">
+	&lt;&lt;</button>
+      <button id="back" onclick="stepBackward(event)" title="Step Backward">
+	&lt;</button>
+      <button id="startStop" onclick="startStop(event)"
+	      title="Start/Stop">
+	Start</button>
+      <button id="forward" onclick="stepForward(event)" title="Step Forward">
+	&gt;</button>
+      <input type="range" onchange="setPlaybackSpeed(this.value)"
+	     id="speedSlider"
+	     title="Change Play Speed"
+	     step="1" min="-100" max="100" value="0">
+      <span class="textInButtons" onclick="setDefaultSpeed()">
+	<span id="stepsPerMin">120</span>
+	/min
+      </span>
+      &ensp;
+      <img id="zoomIn" width="20px" src="icons/zoom_in.png" onclick="zoom(+1)"
+	   title="zoom in">
+      <img id="zoomOut" width="20" src="icons/zoom_out.png" onclick="zoom(-1)"
+	   title="zoom out">
+      &ensp;
+      <span class="textInButtons">
+	Show:
+      </span>
+      <select id="visionOption" name="option" onchange="changeViewOption(this)"
+	      title="View Range Option">
+	<option value="ahead">ahead</option>
+        <option value="visible">visible</option>
+        <option value="+3">+3</option>
+        <option value="follower">follower</option>
+      </select>
+      <button id="help" onclick="location.href='help-jp.html'"
+	      title="Show Manual">
+	Help</button>
+    </div>
+    <svg id="progressBar" height="10" style="width: 100%;"></svg>
+    <div id="raceState">
+      <img src='icons/clock.png' alt='clock: ' width='20px' height='20px'
+	   style='margin-bottom:-4pt'/>
+      <span id='stepNumber' style="color: black" title="Step Number">0</span>
+      &ensp;
+      <span class='player0'>
+	<span id='name0'></span>
+	<span id='position0'></span>
+      </span>
+      &ensp;
+      <span class='player1'>
+	<span id='name1'></span>
+	<span id='position1'></span>
+      </span>
+    </div>
+    <div id="courseDiv" onclick="mouseClicked(event)"></div>
+    <div
+       id="coverall"
+       style="position:fixed; left:0; top:0; height:100%; width:100%;
+	      font-family:roman; font-size:36px; font-weight:bold;
+	      background:white;
+	      display:none">
+      <p style="padding-bottom:10%" />
+      <center>
+	<caption><i>Results</i></caption>
+	<table>
+	  <tr style="color:black; font-style:oblique">
+	    <th>Team</th>
+	    <th>1st</th>
+	    <th>2nd</th>
+	    <th>Total</th>
+	  </tr>
+	  <tr style="color:red">
+	    <td id=resultName0></td>
+	    <td id=resultTime00></td>
+	    <td id=resultTime01></td>
+	    <td id=resultTotal0></td>
+	  </tr>
+	  <tr style="color:blue">
+	    <td id=resultName1></td>
+	    <td id=resultTime10></td>
+	    <td id=resultTime11></td>
+	    <td id=resultTotal1></td>
+	  </tr>
+	</table>
+	<div style="padding: 10px">
+	  <button style="font-size:32px; font-family:roman; font-weight:bold; margin: 10px;";
+		  id="nextButton" onclick="nextRace()">
+	  </button>
+	  <button style="font-size:32px; font-family:roman; font-weight:bold; margin: 10px;";
+		  id="againButton" onclick="showAgain()">
+	    <i>Show Again</i>
+	  </button>
+	</div>
+      </center>
+    </div>
+    <script>
+      startMatch();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,61 @@
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    overflow: hidden;
+}
+.buttons {
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    background: #642;
+    border: outset 2px;
+}
+.buttons button {
+    vertical-align: middle;
+    margin: 3px;
+}
+#pauseButtons button {
+    margin: 3px;
+}
+.textInButtons {
+    color: #FF8;
+}
+#speedSlider {
+    width: 80px;
+    height: 10px;
+}
+#raceState {
+    width: 100%;
+    height: 20px;
+    background: #DDD;
+    font-weight: bold;
+    border: outset 2px;
+}
+.player0 {
+    color: red;
+}
+.player1 {
+    color: blue;
+}
+#courseDiv {
+    display: inline-block;
+    width: 100%;
+    margin-top: 2px;
+    height: calc(100% - 130px);
+    position: absolute;
+}
+#visionScreen {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    background-color: #FFF8;
+    border: none;
+    z-index: 10;
+}
+td, th {
+    padding: 10px;
+    text-align: center;
+}

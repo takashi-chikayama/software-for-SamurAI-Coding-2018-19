@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>SamurAI 3x3 2018-19 Rule Summary</title>
+    <style>
+      em { color:#C00; font-weight:bold; font-style: normal}
+    </style>
+  </head>
+  <body style="font-family:roman; font-size:30px">
+    <center style="font-size:40px; font-weight:bold">
+      SamurAI Jockey 2018-2019 Rule Summary</center>
+    <ul>
+      <img src="racecourse.png"
+	   style="float:right; height:100%">
+      <li>
+	The game is a <em>two player race</em>.
+      </li>
+      <li>
+	In each step, players can <em>
+	  change their speed by &plusmn;1</em>,
+	in either <i>x</i> or <i>y</i> direction, or both.
+      </li>
+      <li>
+	There are <em>obstacles</em> <img src="../icons/obstacle.png" width=30> and/or
+	<em>puddles</em> <img src="../icons/puddle.png" width=30> in the course.
+	<ul>
+	  <li>Moves going out of the course or <em>touching an obstacle</em>
+	    are canceled.</li>
+	  <li>
+	    Players' speed becomes zero when their moves end at paddles.
+	    Note that moves <em>can jump over paddles</em>.
+	  </li>
+	</ul>
+      </li>
+      <li>
+	Players have <em>limited fields of vision</em>.
+	Obstacles far away cannot be seen.
+	Two players have the same field of vision;
+	<em>the follower has some advantage</em>.
+      </li>
+      <img src="collision.png" style="float:right; width:15%">
+      <li>
+	When <em>players' moves cross or touch</em> each other,
+	the move without <em>priority</em> is canceled.
+	<ul>
+	  <li>
+	    The player behind (with the smaller <i>y</i>-axis) has
+	    the priority.
+	  </li>
+	  <li>
+	    When at the same <i>y</i>-axis, one to the left (with
+	    the smaller <i>x</i>-axis) at start has the priority.
+	  </li>
+	  <li>
+	    <em>Exception:</em> When the move touches the square of
+	    the opponent's original position, it is canceled.
+	  </li>
+
+	</ul>
+      </li>
+      <li>
+	A match comprises of <em>two races on the same race course</em>,
+	with the start positions exchanged.
+	One with the shorter <em>total goal times</em>
+	is the winner.
+      </li>
+    </ul>  
+    <a href="javascript:history.back()">Go Back</a>
+  </body>
+</html>

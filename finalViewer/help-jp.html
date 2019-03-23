@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="help.css">
+  </head>
+  <body>
+    <a href="help-en.html">English</a>
+    <h1>
+	SamurAI Jockey 2018 レースビューワ<br>
+    </h1>
+
+    <div style="margin-left: 40px; margin-right: 50px;">
+      <p>
+	<b>SamurAI Jockey 2018 レースビューワ</b> は
+	SamurAI Jockey 2018 ゲームの結果をブラウザ上で可視化するツールです.
+    </div>
+
+    <h2>表示画面</h2>
+
+    <p>
+      下図はレースビューワの表示画面例です.
+    </p>
+
+    <figure>
+      <img src="screenshots/window-sample.png" width="100%">
+      <figcaption>表示画面例</figcaption>
+    </figure>
+
+
+    <p>
+      最上部の茶色の部分は<b>制御パネル</b>で,
+      ゲームの再生を制御するボタンやスライダーが並んでいます.
+      その下にあるグレーの部分<b>状況表示パネル</b>で,
+      レースの状況に関する情報を表示します.
+      その下に<b>レースコース表示</b>があります.
+    </p>
+
+    <h2>制御パネル</h2>
+    <p>
+      表示を制御するボタンやスライダは, 画面最上部の制御パネルにあります.
+      以下, 各ボタン・スライダについて説明します.
+    </p>
+    <figure>
+      <img src="screenshots/control.png" width="100%"><br>
+      <figcaption>制御パネル</figcaption>
+    </figure>
+
+    <h3>Load ボタン</h3>
+    <p>
+      ボタン <span class="buttonName">Load</span> をクリックすると,
+      SamurAI Jockey ゲームのログファイルを選ぶダイアログが表示されるので,
+      ロードするファイルを選んでください.
+      ログファイルは審判システムが出力する1回のレースの進行と結果を表すもので.
+      ログファイルのサンプルが
+      SamurAI Jockey 2018 システムの配布ソフトウェア中の
+      <code>samples/sample.racelog</code> にあります.
+    </p>
+    <p>
+      ログファイルをロードすると,
+      状況表示パネルやレースコース表示の内容が更新さます.
+    </p>
+
+    <h3>Start/Stop ボタン</h3>
+    <p>
+      ボタンに <span class="buttonName">Start</span> が表示されているときは,
+      レースの自動再生開始前あるいは再生中断中です.
+      このときにクリックすると, レースの自動再生を開始あるいは継続します.
+    </p>
+    <p>
+      ボタンに <span class="buttonName">Stop</span> が表示されているときは,
+      レースの自動再生中です.
+      このときにクリックすると, レースの再生を中断します.
+    </p>
+    <p>
+      自動再生がレースの最後まで来ると, 自動再生は終了します.
+    </p>
+
+    <h3>ステップ再生ボタン</h3>
+    <p>
+      ボタン <span class="buttonName">&gt;</span> と
+      <span class="buttonName">&lt;</span> はステップ再生ボタンです.
+      これらをクリックすると, 状況表示を1ステップ前後に更新します.
+    </p>
+
+    <h3>巻き戻し</h3>
+    <p>
+      ボタン <span class="buttonName">&lt;&lt;</span>
+      をクリックすると, 表示する状況はレース開始時に戻ります.
+    </p>
+
+    <h3>再生速度の制御</h3>
+    <p>
+      制御パネル中のスライダー <img src="screenshots/speedSlider.png" width="120px">
+      を使って自動再生の速度を制御できます.
+      スライダーのノブを左に動かすと再生は遅く,
+      右に動かすと速くなります.
+      現在の再生速度の設定値 (毎分のステップ数) はスライダーの横に表示されます.
+    </p>
+
+    <h3>表示の拡大・縮小</h3>
+    <p>
+      制御パネル中の虫眼鏡ボタン <img src="icons/zoom_in.png" height="20px">
+      <img src="icons/zoom_out.png" height="20px">
+      をクリックするとレースコース表示を拡大・縮小します。
+    </p>
+
+    <h3>表示部分の設定</h3>
+    <p>
+      レースコース全体を一度に表示しきれない場合,
+      制御パネル中の Show: の直後のセレクタで,
+      自動再生中にコースのどの部分を表示するかを設定します.
+      各選択肢の意味は以下のとおりです.
+      <dl>
+	<dt>ahead</dt>
+	<dd>1ステップ先に視界範囲に入るところまでを表示 (既定値)</dd>
+	<dt>visible</dt>
+	<dd>視界範囲までを表示</dd>
+	<dt>&plus;3</dt>
+	<dd>視界範囲から3枡上までを表示</dd>
+	<dt>follower</dt>
+	<dd>後続の (y 座標が小さい) プレイヤの位置が表示範囲に入るように表示</dd>
+      </dl>
+    </p>
+    <h3>Help ボタン</h3>
+    <p>
+      <span class="buttonName">Help</span> ボタンをクリックすると,
+      このページを表示します.
+    </p>
+
+    <h3>キーボードによる制御</h3>
+    <p>
+      下記のキーボード入力による制御もできます.
+      <table class="bordered">
+	<tr>
+	  <th>キー</th><th>機能</th>
+	  <th>キー</th><th>機能</th>
+	  <th>キー</th><th>機能</th>
+	</tr>
+	<tr>
+	  <td><code>s</code></td><td>Start/Stop</td>
+	  <td><code>&plus;</code></td><td>表示拡大</td>
+	  <td><code>&uarr;</code></td><td>上にスクロール</td>
+	</tr>
+	<tr>
+	  <td><code>r</code></td><td>巻き戻し</td>
+	  <td><code>&minus;</code></td><td>表示縮小</td>
+	  <td><code>&darr;</code></td><td>下にスクロール</td>
+	</tr>
+	<tr>
+	  <td><code>f</code></td><td>ステップ前進</td>
+	  <td><code>v</code></td><td>表示部分設定変更</td>
+	  <td><code>&larr;</code></td><td>左にスクロール</td>
+	</tr>
+	<tr>
+	  <td><code>b</code></td><td>ステップ後退</td>
+	  <td></td><td></td>
+	  <td><code>&rarr;</code></td><td>右にスクロール</td>
+	</tr>
+      </table>
+      アルファベットキーについては大文字・小文字とも同じ機能です.
+    </p>
+
+    <h2>状況表示パネル</h2>
+    <p>
+      状況表示パネルには, 現在表示中のステップにおけるゲームの状況のサマリーを表示します.
+    </p>
+    <figure style="width: 300px">
+      <img src="screenshots/information.png"><br>
+      <figcaption>状況表示パネル</figcaption>
+    </figure>
+
+    <h3>ステップ番号</h3>
+    <p>
+      左端の時計のアイコンの右に, 現在のステップ番号が表示されます.
+    </p>
+
+    <h3>プレイヤ名と位置</h3>
+    <p>
+      プレイヤの名前と現在位置 (枡の座標) が次に表示されます.
+      プレイヤ 0 とプレイヤ 1 について, それぞれ赤と青の文字で表示します.
+      既にゴールしたプレイヤについては, 位置の代わりにゴール時間が表示されます.
+    </p>
+
+    <h2>レースコース表示</h2>
+    <p>
+      レースコース表示には, レースコースの各枡の種類,
+      両プレイヤの現在の位置と軌跡,
+      そして当該ステップで指示した動きが表示されます.
+    </p>
+
+    <figure style="float:right">
+      <table>
+	<tr>
+	  <td><img src="icons/lawn.png" width="60px"></td>
+	  <td><img src="icons/obstacle.png" width="60px"></td>
+	  <td><img src="icons/jump.png" width="60px"></td>
+	</tr>
+	<tr>
+	  <td>平坦</td>
+	  <td>障害物</td>
+	  <td>水濠</td>
+	</tr>
+	<tr>
+	</tr>
+      </table>
+      <figcaption>枡の種類</figcaption>
+    </figure>
+
+    <h3>枡の種類</h3>
+    <p>
+      枡の種類は右図のように表示されます.
+      障害物の枡には主催者やスポンサーのロゴが数枡にまたがって表示されることもあります.
+    </p>
+
+    <h3>視界の表示</h3>
+    レースコース表示の上部の枡が視界の範囲外である場合,
+    白っぽく紗をかけて表示します.
+
+    <h3>スタートラインとゴールライン</h3>
+    <p>
+      スタートラインは赤, ゴールラインは緑の線で表示します.
+    </p>
+
+    <h3>プレイヤの位置</h3>
+    <p>
+      表示するステップにおけるプレイヤの位置と指示した進行方向は,
+      赤 (プレイヤ0) と青 (プレイヤ1) の三角形で表示します.
+    </p>
+
+    <h3>軌跡</h3>
+    <p>
+      プレイヤの軌跡, すなわちそれまでにプレイヤが動いてきた跡は,
+      それぞれの色の小円と折線で表示します.
+      コースアウトや衝突のために指示通りの動きができなかったステップについては,
+      破線で指示された動きを示します.
+    </p>
+
+    <a href="#" onclick="history.go(-1);return true;">
+      レースビューワに戻るにはここをクリックしてください.
+    </a>
+  </body>
+</html>
